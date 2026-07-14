@@ -114,7 +114,7 @@ async function loadUserInfo() {
 
 // Check if user is logged in on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    if (api.getToken() != null) {
+    if (api.getToken() != null && api.getToken() != 'null') {
         // Redirect to home if already logged in
         window.location.href = 'home.html';
     }
