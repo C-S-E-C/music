@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music</title>
+    <link rel="stylesheet" type="text/css" href="/css/pages/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <script src="/js/api.js"></script>
+    <script src="/js/player.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/pages/home.js"></script>
+    <style id="style"></style>
+</head>
+<body>
+    <div id="loading">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 0 1300 600"><path d="M3.35,244.99c166.85,46.42,304.13,12.05,339.67-64.46,20.24-43.57,11.91-110.3-27.91-144.19-52.22-44.45-145.84-21.51-192.75,26.01-16.93,17.15-33.91,43.72-42.15,214.88-6.54,135.81-9.29,204.25,15.7,230.58,69.8,73.53,274.06,48.41,309.92-54.55,21.01-60.32-17.95-141.14-76.86-177.69-102.65-63.69-259.83,34.53-259.5,35.54.29.9,124.43-73.59,259.5-35.54,57.34,16.16,59.85,36.59,119.83,50.41,99.64,22.96,216.46-4.91,223.44-44.7,5.2-29.65-49.21-73.79-105.26-78.44-38.34-3.18-76.47,12.63-100.83,38.84-60.68,65.32-28.53,202.82,46.52,244.4,21.18,11.73,55.79,21.41,91.4,12.84,0,0,31.92-7.67,59.63-34.11,85.63-81.73,142.69-439.25,118.98-442.96-13.44-2.11-39.15,111.64-59.5,201.65-32.37,143.18-47.8,215.46-10.74,249.59,16.83,15.5,72.34,23.1,183.39,38.11,4.42.6,11.06,1.72,19.92,1.49,15.3-.39,63.83-2.31,103.3-39.6,50.83-48.03,45.36-115.71,44.09-131.42-1.95-24.15-4.63-57.32-30.04-79.79-36.82-32.57-97.26-18.58-131.4,0-45.19,24.59-78.44,76.01-75.21,132.7.23,4.09,6.36,88.77,71.07,112.4,48.89,17.85,101.44-11.29,128.86-41.72,68.11-75.6,34.15-218.55,28.17-218.61-1.1-.01-3.76,35.81-9.09,107.44-9.15,123.02-3.91,141.7,9.09,154.55,30.58,30.21,95.5,7.9,99.17,6.61,77.62-27.24,131.84-127.17,122.31-184.3-13.28-79.64-164.98-161.99-712.4-199.17"/></svg>
+    </div>
+
+    <main class="page">
+        <section class="hero" aria-label="Search">
+            <div class="hero-copy">
+                <p class="eyebrow">Syntropica Music</p>
+                <h1>Find your next track.</h1>
+                <p class="hero-text">Search approved songs by title, artist, album, or tag.</p>
+            </div>
+            <div class="search-actions">
+                <form class="search" method="get" action="search.html">
+                    <input id="search-input" type="text" name="key" placeholder="Search songs, artists, albums, etc." autocomplete="off" />
+                    <button id="search-btn" type="submit" aria-label="Search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Zm0-2a5.3 5.3 0 1 0 0-10.6 5.3 5.3 0 0 0 0 10.6Zm5.5.2 4.2 4.2-1.4 1.4-4.2-4.2 1.4-1.4Z"/>
+                        </svg>
+                    </button>
+                </form>
+                <a href="/upload.html" target="_top" class="upload-link">Upload Song</a>
+            </div>
+        </section>
+
+        <section class="quick-grid" aria-label="Quick searches">
+            <a href="search.html?key=pop">Pop</a>
+            <a href="search.html?key=rock">Rock</a>
+            <a href="search.html?key=classic">Classic</a>
+            <a href="search.html?key=electronic">Electronic</a>
+        </section>
+    </main>
+</body>
+</html>

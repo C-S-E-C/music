@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music - Login</title>
+    <link rel="stylesheet" type="text/css" href="css/base.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+<body>
+    <div id="auth-container">
+        <div id="login-form" class="auth-form active">
+            <h1>Syntropica</h1>
+            <h2>Login</h2>
+            <div id="login-error" class="error-message"></div>
+            <input type="text" id="login-username" placeholder="Username" />
+            <input type="password" id="login-password" placeholder="Password" />
+            <input type="text" id="login-totp" placeholder="TOTP Code" maxlength="6" />
+            <button onclick="loginUser()">Login</button>
+            <p>Don't have an account? <a onclick="switchToRegister()">Register</a></p>
+        </div>
+
+        <div id="register-form" class="auth-form">
+            <h1>Syntropica</h1>
+            <h2>Register</h2>
+            <div id="register-error" class="error-message"></div>
+            <input type="text" id="register-username" placeholder="Username" />
+            <input type="email" id="register-email" placeholder="Email" />
+            <input type="password" id="register-password" placeholder="Password" />
+            <button id="register-btn" onclick="registerUser()">Register</button>
+            <p>Already have an account? <a onclick="switchToLogin()">Login</a></p>
+            <div id="totp-setup">
+                <h3>Two-Factor Authentication Setup</h3>
+                <p>Scan this QR code with your authenticator app:</p>
+                <div id="qr-code"></div>
+                <p>Or enter manually:</p>
+                <input type="text" id="totp-secret" readonly />
+                <button onclick="copyToClipboard('totp-secret')">Copy Secret</button>
+                <p><a onclick="switchToLogin()">Go back to login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>

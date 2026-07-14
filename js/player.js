@@ -1,0 +1,287 @@
+class player {
+    constructor() {
+        if (!sessionStorage.getItem('Playlist')) {
+            sessionStorage.setItem('Playlist', JSON.stringify([]));
+            sessionStorage.setItem('PlaylistCursor', '0');
+        }
+        this.status = 'loading';
+        this.e = {};
+        this.e.player = document.getElementById('player');
+        if (!this.e.player) {
+            console.error('Player element not found');
+            return;
+        }
+        this.audioA = this.e.player.querySelector('#audioA');
+        this.audioB = this.e.player.querySelector('#audioB');
+        this.e.info = {};
+        this.e.info.title = this.e.player.querySelector('#title');
+        this.e.info.artist = this.e.player.querySelector('#artist');
+        this.e.info.cover = this.e.player.querySelector('#cover');
+        this.e.progress = {};
+        this.e.progress.bar = this.e.player.querySelector('#bar');
+        this.e.progress.time = this.e.player.querySelector('#time');
+        this.e.controls = {};
+        this.e.controls.prev = this.e.player.querySelector('#prev');
+        this.e.controls.play = this.e.player.querySelector('#play');
+        this.e.controls.playbtn = this.e.player.querySelector('#play-btn');
+        this.e.controls.pausebtn = this.e.player.querySelector('#pause-btn');
+        this.e.controls.next = this.e.player.querySelector('#next');
+        this.audio = this.audioA;
+        this.preloadedChunks = [];
+        this.nextChunkReady = false;
+        this.isPreloading = false;
+        this.workerInterval = setInterval(this.workerIntervalFunc.bind(this), 100);
+        this.e.controls.prev.addEventListener('click', () => {
+            this.changeSong(-1);
+        })
+        this.e.controls.play.addEventListener('click', () => {
+            this.play();
+        })
+        this.e.controls.next.addEventListener('click', () => {
+            this.changeSong(1);
+        })
+    }
+
+    getPlaylist() {
+        return { songs: JSON.parse(sessionStorage.getItem('Playlist')), cursor: parseInt(sessionStorage.getItem('PlaylistCursor')) };
+    }
+
+    formatTime(totalSeconds) {
+        if (totalSeconds <= 0) {
+            return "00:00";
+        }
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = (totalSeconds % 60).toFixed(1);
+        if (hours > 0) {
+            return String(hours).padStart(1, "0") + ":" + 
+                   String(minutes).padStart(2, "0") + ":" + 
+                   String(seconds).padStart(4, "0");
+        }
+        return String(minutes).padStart(2, "0") + ":" + 
+               String(seconds).padStart(4, "0");
+    }
+
+    play() {
+        // If nothing has been started yet (or the last song ended), (re)start playback
+        // instead of silently doing nothing.
+        if (this.status === 'idle' || this.status === 'loading') {
+            this.e.controls.playbtn.style.opacity = '0';
+            this.e.controls.pausebtn.style.opacity = '1';
+            if (this.song) {
+                this.status = 'playing';
+            } else {
+                this.start();
+            }
+            return;
+        }
+        if (this.status == 'playing') {
+            this.e.controls.playbtn.style.opacity = '1';
+            this.e.controls.pausebtn.style.opacity = '0';
+            this.status = 'paused';
+        }
+        else if (this.status == 'paused') {
+            this.e.controls.playbtn.style.opacity = '0';
+            this.e.controls.pausebtn.style.opacity = '1';
+            this.status = 'playing';
+        }
+    }
+
+    async renderSong() {
+        this.e.progress.bar.style.transition = "width 0.75s ease-out";
+        this.e.progress.bar.style.width = "0%";
+        await new Promise(resolve => setTimeout(resolve, 750));
+        this.e.info.title.innerText = this.song.title;
+        this.e.info.artist.innerText = this.song.artist;
+        const coverUrl = await api.getSongCover(this.song.id).catch(() => 'imgs/default-cover.png');
+        this.e.info.cover.style.backgroundImage = `url('${coverUrl}') || url('imgs/default-cover.png')`;
+        this.e.progress.time.innerText = `00:00 / ${this.song.duration}`;
+        this.e.progress.bar.style.transition = "width 0.1s linear";
+    }
+
+    async start() {
+        const playlist = this.getPlaylist();
+        if (playlist.songs.length == 0) {
+            this.status = 'idle';
+            return;
+        }
+        // Keep the cursor within playlist bounds (wrap around in either direction).
+        let cursor = playlist.cursor % playlist.songs.length;
+        if (cursor < 0) {
+            cursor += playlist.songs.length;
+        }
+        if (cursor !== playlist.cursor) {
+            sessionStorage.setItem('PlaylistCursor', String(cursor));
+        }
+
+        // Clean up any preloaded/queued audio from the previous song.
+        this.preloadedChunks = [];
+        this.nextChunkReady = false;
+        this.isPreloading = false;
+        [this.audioA, this.audioB].forEach((el) => {
+            if (el && el.src) {
+                URL.revokeObjectURL(el.src);
+                el.pause();
+                el.removeAttribute('src');
+                el.load();
+            }
+        });
+
+        const id = playlist.songs[cursor].id;
+        // `currentChunk` is the 0-based index (matching the API) of the
+        // chunk currently loaded into `this.audio`.
+        this.currentChunk = 0;
+        // Always start a new song on the "A" element so audioA/audioB
+        // stay in sync with the load/prepare logic below.
+        this.audio = this.audioA;
+        const info = await api.getSongInfo(id);
+        this.song = info;
+        this.song.id = id;
+        this.song.duration = this.formatTime(this.song.chunks*5);
+        this.song.currentTime = "00:00";
+        this.song.preloadChunkCount = parseInt(localStorage.getItem("settings.preloadChunkCount")) || 2;
+        const renderer = this.renderSong();
+
+        // Load the first chunk into the active audio element and start
+        // playback. Without this, nothing is ever assigned to `audio.src`
+        // and the worker loop has nothing to play.
+        const firstChunk = await (await api.getSongChunk(this.song.id, this.currentChunk)).blob();
+        this.audio.src = URL.createObjectURL(firstChunk);
+        await renderer;
+        this.status = 'playing';
+        await this.audio.play();
+
+        // Kick off buffering of the next chunk right away.
+        this.preload();
+        this.prepareNextChunk();
+    }
+
+    async worker() {
+        if (!this.song||this.status == 'idle') {
+            return;
+        }
+        this.song.currentTime = this.formatTime(this.audio.currentTime+this.currentChunk*5);
+        this.e.progress.time.innerText = `${this.song.currentTime} / ${this.song.duration}`;
+        this.e.progress.bar.style.width = `${(this.audio.currentTime+this.currentChunk*5)/(this.song.chunks*5)*100}%`;
+        if (this.currentChunk >= this.song.chunks-1 && this.audio.ended) {
+            this.status = 'idle';
+            this.changeSong(1);
+            return;
+        }
+        if (this.status == 'paused') {
+            this.audio.pause();
+        }
+        if (this.status == 'playing'&&this.audio.paused&&!this.audio.ended) {
+            this.audio.play();
+        }
+        if (this.audio.ended) {
+            const finishedAudio = this.audio;
+            const nextAudio = (this.audio == this.audioA) ? this.audioB : this.audioA;
+            if (!nextAudio.src) {
+                // The next chunk wasn't ready in time; fetch it now before swapping.
+                this.nextChunkReady = false;
+                await this.prepareNextChunk(true);
+            }
+            this.currentChunk++;
+            this.audio = nextAudio;
+            this.nextChunkReady = false;
+            this.audio.play();
+            // Release the chunk we just finished playing, now that the
+            // active audio element has switched to the other buffer.
+            finishedAudio.pause();
+            if (finishedAudio.src) {
+                URL.revokeObjectURL(finishedAudio.src);
+            }
+            finishedAudio.removeAttribute('src');
+            // Start buffering the chunk after next into the now-inactive buffer.
+            this.preload();
+            this.prepareNextChunk();
+        } else {
+            this.preload();
+            this.prepareNextChunk();
+        }
+    }
+
+    async preload() {
+        if (this.isPreloading || this.status=='idle' || this.song.preloadChunkCount == this.preloadedChunks.length) {
+            return;
+        }
+        const nextChunkNum = this.currentChunk+this.preloadedChunks.length+1;
+        if (nextChunkNum >= this.song.chunks) {
+            return;
+        }
+        this.isPreloading = true;
+        try {
+            const response = await api.getSongChunk(this.song.id, nextChunkNum);
+            const blob = await response.blob();
+            this.preloadedChunks.push(blob);
+            // Fill the inactive audio element as soon as a chunk is available,
+            // rather than waiting for the next worker tick.
+            this.prepareNextChunk();
+        } finally {
+            this.isPreloading = false;
+        }
+        if (this.preloadedChunks.length < this.song.preloadChunkCount) {
+            this.preload();
+        }
+    }
+
+    async prepareNextChunk(force = false) {
+        // Only skip if we've already buffered the *next* chunk into the
+        // inactive audio element, or there's nothing left to buffer.
+        if (this.nextChunkReady || (this.song.preloadChunkCount == 0 && !force) || (this.currentChunk+1 >= this.song.chunks)) {
+            return;
+        }
+        var targetAudio;
+        if (this.audio == this.audioA) {
+            targetAudio = this.audioB;
+        } else {
+            targetAudio = this.audioA;
+        }
+        let blob;
+        if (this.preloadedChunks.length > 0) {
+            blob = this.preloadedChunks.shift();
+        } else if (force) {
+            const response = await api.getSongChunk(this.song.id, this.currentChunk+1);
+            blob = await response.blob();
+        } else {
+            // Nothing preloaded yet and not forced — let preload() fetch it
+            // on its own schedule instead of firing an extra request here.
+            return;
+        }
+        if (targetAudio.src) {
+            URL.revokeObjectURL(targetAudio.src);
+        }
+        targetAudio.src = URL.createObjectURL(blob);
+        this.nextChunkReady = true;
+    }
+
+    changeSong(direction) {
+        const playlist = this.getPlaylist();
+        if (playlist.songs.length === 0) {
+            sessionStorage.setItem('PlaylistCursor', '0');
+            this.status = 'paused';
+            return;
+        }
+        let cursor = (playlist.cursor + direction) % playlist.songs.length;
+        if (cursor < 0) {
+            cursor += playlist.songs.length;
+        }
+        sessionStorage.setItem('PlaylistCursor', String(cursor));
+        this.start();
+    }
+
+    workerIntervalFunc() {
+        if (this.status == 'idle') {
+            return;
+        }
+        this.worker();
+    }
+
+}
+
+if (!window.player && window.top == window.self) {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.playerAPI = new player();
+    });
+}
