@@ -7,7 +7,7 @@ const API_URL = localStorage.getItem('apiUrl');
 class MusicAPI {
     constructor() {
         this.token = localStorage.getItem('authToken');
-        if((this.token == null || this.token == 'null')&&window.location.href != 'index.html'){
+        if((this.token == null || this.token == 'null')&&window.location.pathname != '/index.html'){
             window.location.href = 'index.html';
         }
         this._updateMe();
