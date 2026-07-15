@@ -269,6 +269,7 @@ class player {
         if (cursor < 0) {
             cursor += playlist.songs.length;
         }
+        this.status = 'idle';
         sessionStorage.setItem('PlaylistCursor', String(cursor));
         this.start();
     }
