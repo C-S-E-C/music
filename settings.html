@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music - Settings</title>
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/settings.css">
+    <script src="/js/settings.js" defer></script>
+    <style id="style"></style>
+</head>
+<body>
+    <main class="settings-page">
+        <nav class="settings-nav" aria-label="Page navigation">
+            <a href="home.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5.2a.5.5 0 0 1-.5-.5v-5.2H9.2v5.2a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5v-9.7z"/>
+                </svg>
+                <span>Home</span>
+            </a>
+        </nav>
+
+        <section class="settings-header">
+            <p class="eyebrow">Account</p>
+            <h1>Settings</h1>
+        </section>
+
+        <form id="settings-form" class="settings-form">
+            <section class="settings-section" aria-labelledby="connection-title">
+                <div>
+                    <h2 id="connection-title">Connection</h2>
+                    <p>Set the backend endpoint this browser should use.</p>
+                </div>
+                <label class="field">
+                    <span>API URL</span>
+                    <input id="api-url" name="apiUrl" type="url" placeholder="https://api.example.com" autocomplete="url">
+                </label>
+            </section>
+
+            <section class="settings-section" aria-labelledby="playback-title">
+                <div>
+                    <h2 id="playback-title">Playback</h2>
+                    <p>Tune buffering behavior for streaming songs.</p>
+                </div>
+                <label class="field">
+                    <span>Preload chunks</span>
+                    <input id="preload-chunks" name="preloadChunkCount" type="number" min="0" max="8" step="1">
+                </label>
+            </section>
+
+            <section class="settings-section" aria-labelledby="experience-title">
+                <div>
+                    <h2 id="experience-title">Experience</h2>
+                    <p>Control optional beta interface behavior.</p>
+                </div>
+                <label class="toggle">
+                    <input id="beta-loading-page" name="betaLoadingPage" type="checkbox">
+                    <span>Show beta loading animation</span>
+                </label>
+            </section>
+
+            <div class="settings-actions">
+                <button id="save-settings" type="submit">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 3h11.6L21 7.4V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h1zm2 2v5h8V5H7zm0 14h10v-6H7v6z"/>
+                    </svg>
+                    <span>Save</span>
+                </button>
+                <button id="reset-settings" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 5a7 7 0 1 1-6.3 4H3l3.8-4L10.5 9H7.9A5 5 0 1 0 12 7V5z"/>
+                    </svg>
+                    <span>Reset</span>
+                </button>
+                <p id="settings-status" role="status" aria-live="polite"></p>
+            </div>
+        </form>
+    </main>
+</body>
+</html>
