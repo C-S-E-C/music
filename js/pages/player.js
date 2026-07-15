@@ -52,6 +52,10 @@ function syncLargePlayer() {
 
     title.textContent = api.song.title || 'Untitled';
     artist.textContent = api.song.artist || 'Unknown artist';
+    artist.href = "#";
+    if (api.song.artist) {
+        artist.href = "search.html?key="+ (encodeURIComponent(api.song.artist));
+    }
     cover.style.backgroundImage = api.e.info.cover.style.backgroundImage || 'url("/imgs/default-cover.png")';
 
     const currentTime = api.song.currentTime || '00:00.0';

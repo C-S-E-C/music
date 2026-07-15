@@ -399,13 +399,14 @@ h1 {
     text-overflow: ellipsis;
 }
 
-.large-player-info p:last-child {
+.large-player-info a {
     margin: 16px 0 0;
     overflow: hidden;
     color: color-mix(in srgb, var(--front-color, #ffffff) 66%, transparent);
     font-size: clamp(1rem, 2vw, 1.35rem);
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .large-progress {
