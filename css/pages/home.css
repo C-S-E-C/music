@@ -366,18 +366,15 @@ h1 {
     transform: scale(0.96);
 }
 
-.play-result svg,
-.add-result svg {
+.play-result svg {
     width: 22px;
     height: 22px;
-    fill: currentColor;
-}
-
-.play-result svg {
+    fill: var(--bg-color, #202020);
     transform: translateX(1px);
 }
 
 .add-result svg {
+    fill: var(--front-color, #ffffff);
     width: 20px;
     height: 20px;
 }
