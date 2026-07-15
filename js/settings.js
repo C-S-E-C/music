@@ -58,9 +58,48 @@ function resetSettings() {
     setStatus('Settings reset.');
 }
 
+function selectCategory(category) {
+    document.querySelectorAll('.settings-category').forEach((button) => {
+        const isActive = button.dataset.category === category;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+    });
+
+    document.querySelectorAll('.settings-section').forEach((section) => {
+        section.hidden = category !== 'all' && section.dataset.category !== category;
+    });
+}
+
+function bindCategories() {
+    document.querySelectorAll('.settings-category').forEach((button) => {
+        button.addEventListener('click', () => {
+            selectCategory(button.dataset.category || 'all');
+        });
+    });
+}
+
+function loadBeta(){
+    if (!api.me) {
+        setTimeout(()=>{loadBeta()}, 1000);
+        return;
+    }
+    if (api.me.is_beta) {
+        const elements = document.querySelectorAll('[betaNeeded]');
+        elements.forEach((element) => {
+            element.hidden = false;
+        })
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    const elements = document.querySelectorAll('[betaNeeded]');
+    elements.forEach((element) => {
+        element.hidden = true;
+    })
+    loadBeta();
     loadStoredStyle();
     loadSettings();
+    bindCategories();
     settingElement('settings-form').addEventListener('submit', saveSettings);
     settingElement('reset-settings').addEventListener('click', resetSettings);
 });

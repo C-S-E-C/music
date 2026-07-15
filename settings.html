@@ -6,6 +6,7 @@
     <title>Syntropica Music - Settings</title>
     <link rel="stylesheet" type="text/css" href="/css/base.css">
     <link rel="stylesheet" type="text/css" href="/css/settings.css">
+    <script src="/js/api.js" defer></script>
     <script src="/js/settings.js" defer></script>
     <style id="style"></style>
 </head>
@@ -25,8 +26,35 @@
             <h1>Settings</h1>
         </section>
 
+        <div class="settings-categories" role="tablist" aria-label="Settings categories">
+            <button class="settings-category active" type="button" role="tab" aria-selected="true" data-category="all">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/>
+                </svg>
+                <span>All</span>
+            </button>
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-category="connection">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7a8 8 0 0 1 16 0h-2a6 6 0 0 0-12 0H4zm3 4a5 5 0 0 1 10 0h-2a3 3 0 0 0-6 0H7zm4 4a1 1 0 1 1 2 0v4h-2v-4z"/>
+                </svg>
+                <span>Connection</span>
+            </button>
+            <!-- <button class="settings-category" type="button" role="tab" aria-selected="false" data-category="playback">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5.2c0-.8.8-1.3 1.5-.9l9.7 5.8c.7.4.7 1.4 0 1.8l-9.7 5.8c-.7.4-1.5-.1-1.5-.9V5.2zM4 5h2v14H4V5z"/>
+                </svg>
+                <span>Playback</span>
+            </button> -->
+            <button class="settings-category" type="button" role="tab" aria-selected="false" data-category="experience">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 2.8 14.9 9h6.6l-5.2 4.1 1.9 6.5-6.2-3.7-6.2 3.7 1.9-6.5L2.5 9h6.6L12 2.8z"/>
+                </svg>
+                <span>Experience</span>
+            </button>
+        </div>
+
         <form id="settings-form" class="settings-form">
-            <section class="settings-section" aria-labelledby="connection-title">
+            <section class="settings-section" data-category="connection" aria-labelledby="connection-title">
                 <div>
                     <h2 id="connection-title">Connection</h2>
                     <p>Set the backend endpoint this browser should use.</p>
@@ -37,9 +65,9 @@
                 </label>
             </section>
 
-            <section class="settings-section" aria-labelledby="playback-title">
+            <section class="settings-section" data-category="experience" aria-labelledby="experience-title">
                 <div>
-                    <h2 id="playback-title">Playback</h2>
+                    <h2 id="playback-title">Experience</h2>
                     <p>Tune buffering behavior for streaming songs.</p>
                 </div>
                 <label class="field">
@@ -48,7 +76,7 @@
                 </label>
             </section>
 
-            <section class="settings-section" aria-labelledby="experience-title">
+            <section class="settings-section" data-category="experience" aria-labelledby="experience-title" betaNeeded>
                 <div>
                     <h2 id="experience-title">Experience</h2>
                     <p>Control optional beta interface behavior.</p>

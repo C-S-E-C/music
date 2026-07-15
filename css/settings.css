@@ -65,6 +65,41 @@ body {
     line-height: 1;
 }
 
+.settings-categories {
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.settings-category {
+    min-height: 38px;
+    border: 1px solid color-mix(in srgb, var(--front-color, #ffffff) 14%, transparent);
+    border-radius: 8px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: color-mix(in srgb, var(--front-color, #ffffff) 76%, transparent);
+    background: color-mix(in srgb, var(--front-color, #ffffff) 5%, transparent);
+    font: inherit;
+    cursor: pointer;
+}
+
+.settings-category.active {
+    border-color: color-mix(in srgb, var(--color-teal-50, #03a6a0) 62%, transparent);
+    color: var(--front-color, #ffffff);
+    background: color-mix(in srgb, var(--color-teal-50, #03a6a0) 18%, transparent);
+}
+
+.settings-category svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    fill: currentColor;
+}
+
 .settings-form {
     display: grid;
     gap: 16px;
@@ -79,6 +114,10 @@ body {
     gap: 18px;
     align-items: center;
     background: color-mix(in srgb, var(--front-color, #ffffff) 5%, transparent);
+}
+
+.settings-section[hidden] {
+    display: none;
 }
 
 .settings-section h2 {
@@ -159,6 +198,10 @@ body {
 
     .settings-actions {
         flex-wrap: wrap;
+    }
+
+    .settings-category {
+        flex: 1 1 140px;
     }
 
     #settings-status {
