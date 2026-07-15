@@ -78,6 +78,16 @@ body {
     opacity: 0.6;
 }
 
+#me-wrapper #me .role-badge {
+    margin-left: 4px;
+    color: var(--front-color, #fff);
+    text-decoration: none;
+}
+
+#me-wrapper #me a.role-badge:hover {
+    text-decoration: underline;
+}
+
 #me-wrapper #me #email {
     font-size: 0.75em;
     opacity: 0.75;

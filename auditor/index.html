@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music - Auditor</title>
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/upload.css">
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/auditor.js" defer></script>
+    <style id="style"></style>
+</head>
+<body class="upload-body">
+    <div id="me-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-75 -75 1000 1000" aria-hidden="true">
+            <circle cx="427.35" cy="427.35" r="414.85"/>
+            <circle cx="427.35" cy="260.69" r="166.65"/>
+            <path d="M721.09,710.06c-1.05,23.79-22.95,39.83-55.29,63.52-94.41,69.15-200.78,69.13-238.46,68.62-131.83-1.8-216.12-59.49-234.18-72.38-36.86-26.32-59.36-42.39-60.07-65.99-1.95-64.13,158.06-143.14,307.08-138.05,136.89,4.67,283.71,80.96,280.92,144.29Z"/>
+        </svg>
+        <div id="me"></div>
+    </div>
+
+    <main class="upload-page">
+        <nav class="upload-nav" aria-label="Page navigation">
+            <a href="/home.html">Home</a>
+        </nav>
+
+        <section class="upload-hero">
+            <p class="upload-eyebrow">Auditor</p>
+            <h1>Review queue.</h1>
+            <p>Approve or reject songs that are locked to your audit session.</p>
+        </section>
+
+        <section class="upload-section">
+            <div class="history-header">
+                <h2>Pending songs</h2>
+                <button id="refresh-audits" class="panel-action" type="button">Refresh</button>
+            </div>
+            <div id="auditor-status" class="history-status" role="status" aria-live="polite">Loading pending songs.</div>
+            <div id="auditor-list" class="auditor-list"></div>
+        </section>
+    </main>
+</body>
+</html>

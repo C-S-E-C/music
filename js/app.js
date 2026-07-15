@@ -54,8 +54,12 @@ function updateMe() {
 
     // Build role badges conditionally
     let badges = [];
-    if (api.me.is_auditor === 1) badges.push('#Auditor');
-    if (api.me.is_beta === 1) badges.push('#Beta');
+    if (api.me.is_auditor === 1 || api.me.is_auditor === true) {
+        badges.push('<a class="role-badge auditor-badge" href="/auditor/index.html">#Auditor</a>');
+    }
+    if (api.me.is_beta === 1 || api.me.is_beta === true) {
+        badges.push('<span class="role-badge">#Beta</span>');
+    }
     const badgeText = badges.length > 0 ? ` ${badges.join(' ')}` : '';
 
     info.innerHTML = `
