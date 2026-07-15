@@ -8,7 +8,7 @@ class MusicAPI {
     constructor() {
         this.token = localStorage.getItem('authToken');
         if((this.token == null || this.token == 'null')&&window.location.pathname != '/index.html'){
-            window.location.href = 'index.html';
+            window.location.href = '/index.html';
         }
         this._updateMe();
         this.meintervar = setInterval(async () => this._updateMe(), 30000);
@@ -75,6 +75,29 @@ class MusicAPI {
         });
     }
 
+    async requestPasswordReset(username = null, email = null) {
+        const body = {};
+        if (username) body.username = username;
+        if (email) body.email = email;
+
+        return this.makeRequest('/request-password-reset', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            skipAuth: true,
+        });
+    }
+
+    async resetPassword(resetToken, newPassword) {
+        return this.makeRequest('/reset-password', {
+            method: 'POST',
+            body: JSON.stringify({
+                reset_token: resetToken,
+                new_password: newPassword,
+            }),
+            skipAuth: true,
+        });
+    }
+
     async _updateMe() {
         const request = this.makeRequest('/me');
         this.me = await request;
@@ -89,8 +112,18 @@ class MusicAPI {
         this.me.last_fetch = new Date().toISOString();
     }
 
+    async getMe() {
+        return this.makeRequest('/me');
+    }
+
+    async verifyAccount() {
+        return this.makeRequest('/verify-account', {
+            method: 'POST',
+        });
+    }
+
     // Song endpoints
-    async uploadSong(title, artist, album, tag, audioFile, lyricsFile = null) {
+    async uploadSong(title, artist, album, tag, audioFile, lyricsFile = null, coverFile = null) {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('artist', artist);
@@ -99,6 +132,9 @@ class MusicAPI {
         formData.append('audio', audioFile);
         if (lyricsFile) {
             formData.append('lyrics', lyricsFile);
+        }
+        if (coverFile) {
+            formData.append('cover', coverFile);
         }
 
         const headers = {};
@@ -120,20 +156,34 @@ class MusicAPI {
         return response.json();
     }
 
+    async getMySongs() {
+        return this.makeRequest('/my-songs');
+    }
+
     async searchSongs(query) {
         return this.makeRequest(`/search-song/${encodeURIComponent(query)}`, {
             skipAuth: true,
         });
     }
 
-    async getSongInfo(songId) {
+    async getSongInfo(songId, useAuth = false) {
         return this.makeRequest(`/get-song-info/${songId}`, {
-            skipAuth: true,
+            skipAuth: !useAuth,
         });
     }
 
-    async getSongLyrics(songId) {
-        const response = await fetch(`${API_URL}/get-song-info/${songId}/lyrics`);
+    async getSongLyrics(songId, reviewToken = null) {
+        const headers = {};
+        if (reviewToken) {
+            headers['X-Review-Token'] = reviewToken;
+            if (this.token) {
+                headers['Authorization'] = `Bearer ${this.token}`;
+            }
+        }
+
+        const response = await fetch(`${API_URL}/get-song-info/${songId}/lyrics`, {
+            headers,
+        });
         if (!response.ok) {
             throw new Error('Lyrics not found');
         }
@@ -144,14 +194,37 @@ class MusicAPI {
         return `${API_URL}/get-song-info/${songId}/cover`;
     }
 
-    async getSongChunk(songId, chunk) {
+    async getSongCoverResponse(songId, reviewToken = null) {
+        const headers = {};
+        if (reviewToken) {
+            headers['X-Review-Token'] = reviewToken;
+            if (this.token) {
+                headers['Authorization'] = `Bearer ${this.token}`;
+            }
+        }
+
+        const response = await fetch(`${API_URL}/get-song-info/${songId}/cover`, {
+            headers,
+        });
+        if (!response.ok) {
+            throw new Error('Cover not found');
+        }
+        return response;
+    }
+
+    async getSongChunk(songId, chunk, reviewToken = null) {
         if (!this.token) {
             throw new Error('Not authenticated');
         }
+        const headers = {
+            'Authorization': `Bearer ${this.token}`
+        };
+        if (reviewToken) {
+            headers['X-Review-Token'] = reviewToken;
+        }
+
         const response = await fetch(`${API_URL}/get-song/${songId}/${chunk}`, {
-            headers: {
-                'Authorization': `Bearer ${this.token}`
-            }
+            headers,
         });
         if (!response.ok) {
             throw new Error('Chunk not found');
@@ -170,6 +243,51 @@ class MusicAPI {
             body: JSON.stringify(body),
         });
     }
+
+    async grantAuditor(userId = null, username = null) {
+        const body = {};
+        if (userId) body.user_id = userId;
+        if (username) body.username = username;
+
+        return this.makeRequest('/grant-auditor', {
+            method: 'POST',
+            body: JSON.stringify(body),
+        });
+    }
+
+    async revokeAuditor(userId = null, username = null) {
+        const body = {};
+        if (userId) body.user_id = userId;
+        if (username) body.username = username;
+
+        return this.makeRequest('/revoke-auditor', {
+            method: 'POST',
+            body: JSON.stringify(body),
+        });
+    }
+
+    async getPendingApproval() {
+        return this.makeRequest('/song/pending-approval');
+    }
+
+    async approveSong(songId, reviewToken) {
+        return this.makeRequest(`/song/approve/${songId}`, {
+            method: 'POST',
+            headers: {
+                'X-Review-Token': reviewToken,
+            },
+        });
+    }
+
+    async rejectSong(songId, reviewToken) {
+        return this.makeRequest(`/song/reject/${songId}`, {
+            method: 'POST',
+            headers: {
+                'X-Review-Token': reviewToken,
+            },
+        });
+    }
+
 }
 
 const api = new MusicAPI();

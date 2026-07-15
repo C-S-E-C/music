@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music - Upload History</title>
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/upload.css">
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/creator-history.js" defer></script>
+    <style id="style"></style>
+</head>
+<body class="upload-body">
+    <div id="me-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-75 -75 1000 1000" aria-hidden="true">
+            <circle cx="427.35" cy="427.35" r="414.85"/>
+            <circle cx="427.35" cy="260.69" r="166.65"/>
+            <path d="M721.09,710.06c-1.05,23.79-22.95,39.83-55.29,63.52-94.41,69.15-200.78,69.13-238.46,68.62-131.83-1.8-216.12-59.49-234.18-72.38-36.86-26.32-59.36-42.39-60.07-65.99-1.95-64.13,158.06-143.14,307.08-138.05,136.89,4.67,283.71,80.96,280.92,144.29Z"/>
+        </svg>
+        <div id="me"></div>
+    </div>
+
+    <main class="upload-page">
+        <nav class="upload-nav" aria-label="Page navigation">
+            <a href="/home.html">Home</a>
+            <a href="/creator/index.html">Creator</a>
+            <a href="/creator/upload.html">Upload</a>
+        </nav>
+
+        <section class="upload-hero">
+            <p class="upload-eyebrow">Creator</p>
+            <h1>Upload history.</h1>
+            <p>Track every song you have submitted to Syntropica.</p>
+        </section>
+
+        <section class="upload-section">
+            <div class="history-header">
+                <h2>Your songs</h2>
+                <a href="/creator/upload.html">Upload new</a>
+            </div>
+            <div id="history-status" class="history-status" role="status" aria-live="polite">Loading uploads.</div>
+            <div id="history-list" class="history-list"></div>
+        </section>
+    </main>
+</body>
+</html>

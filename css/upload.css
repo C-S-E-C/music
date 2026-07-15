@@ -24,6 +24,7 @@
     height: 42px;
     display: flex;
     align-items: center;
+    gap: 10px;
     margin-bottom: 34px;
 }
 
@@ -236,6 +237,159 @@
     opacity: 0.6;
 }
 
+.creator-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.creator-card {
+    min-height: 210px;
+    border: 1px solid color-mix(in srgb, var(--front-color) 12%, transparent);
+    border-radius: 18px;
+    padding: 22px;
+    display: grid;
+    align-content: end;
+    gap: 10px;
+    color: var(--front-color);
+    background: color-mix(in srgb, var(--bg-color) 82%, var(--front-color) 5%);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.12);
+    text-decoration: none;
+    transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+}
+
+.creator-card:hover {
+    border-color: var(--color-teal-50, #03a6a0);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+    transform: scale(1.02);
+}
+
+.creator-card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    color: var(--bg-color);
+    background: var(--front-color);
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.creator-card strong {
+    font-size: 1.35rem;
+}
+
+.creator-card span:last-child,
+.history-status,
+.history-meta,
+.history-detail {
+    color: color-mix(in srgb, var(--front-color) 64%, transparent);
+}
+
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.history-header h2 {
+    margin: 0;
+}
+
+.history-header a {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid color-mix(in srgb, var(--front-color) 14%, transparent);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--front-color);
+    background: color-mix(in srgb, var(--bg-color) 78%, var(--front-color) 8%);
+    text-decoration: none;
+}
+
+.history-status {
+    margin-bottom: 14px;
+}
+
+.history-list {
+    display: grid;
+    gap: 10px;
+}
+
+.history-card {
+    min-height: 92px;
+    border: 1px solid color-mix(in srgb, var(--front-color) 10%, transparent);
+    border-radius: 12px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    background: color-mix(in srgb, var(--bg-color) 88%, var(--front-color) 4%);
+}
+
+.history-cover {
+    width: 68px;
+    aspect-ratio: 1;
+    border-radius: 9px;
+    background-color: color-mix(in srgb, var(--front-color) 10%, transparent);
+    background-position: center;
+    background-size: cover;
+}
+
+.history-main {
+    min-width: 0;
+}
+
+.history-title,
+.history-meta,
+.history-detail {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-title {
+    color: var(--front-color);
+    font-weight: 700;
+}
+
+.history-meta,
+.history-detail {
+    margin-top: 5px;
+    font-size: 0.88rem;
+}
+
+.history-badge {
+    min-width: 86px;
+    min-height: 34px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.history-badge.pending {
+    color: var(--color-yellow-100, #693b00);
+    background: var(--color-yellow-20, #ffe999);
+}
+
+.history-badge.approved {
+    color: var(--color-forest-100, #00521b);
+    background: var(--color-forest-20, #a5e8bd);
+}
+
+.history-badge.rejected {
+    color: var(--color-red-100, #870e0e);
+    background: var(--color-red-20, #ffb8b8);
+}
+
 @media (max-width: 760px) {
     .upload-page {
         width: min(100% - 28px, 1040px);
@@ -244,7 +398,8 @@
     }
 
     .field-grid,
-    .file-grid {
+    .file-grid,
+    .creator-grid {
         grid-template-columns: 1fr;
     }
 
@@ -258,5 +413,23 @@
 
     .upload-actions button {
         width: 100%;
+    }
+
+    .history-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .history-card {
+        grid-template-columns: 58px minmax(0, 1fr);
+    }
+
+    .history-cover {
+        width: 58px;
+    }
+
+    .history-badge {
+        grid-column: 1 / -1;
+        justify-self: start;
     }
 }
