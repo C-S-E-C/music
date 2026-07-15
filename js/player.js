@@ -148,6 +148,8 @@ class player {
         const firstChunk = await (await api.getSongChunk(this.song.id, this.currentChunk)).blob();
         this.audio.src = URL.createObjectURL(firstChunk);
         await renderer;
+        this.e.controls.playbtn.style.opacity = '0';
+        this.e.controls.pausebtn.style.opacity = '1';
         this.status = 'playing';
         await this.audio.play();
 
