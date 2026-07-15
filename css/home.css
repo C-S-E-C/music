@@ -132,6 +132,12 @@ body {
     z-index: 9999;
 }
 
+#player.mini-player-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(120%);
+}
+
 #player #progress-bar {
     position: relative;
     display: flex;
