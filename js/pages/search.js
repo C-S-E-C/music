@@ -40,16 +40,21 @@ function songDuration(song) {
     return `${minutes}:${seconds}`;
 }
 
-function playSong(songId, songs) {
-    const playlist = songs.map((song) => ({ id: song.id }));
-    const cursor = Math.max(0, playlist.findIndex((song) => String(song.id) === String(songId)));
-
+function playSong(songId) {
+    const playlist = JSON.parse(top.sessionStorage.getItem('Playlist') || '[]');
+    playlist.push({"id": songId});
     top.sessionStorage.setItem('Playlist', JSON.stringify(playlist));
-    top.sessionStorage.setItem('PlaylistCursor', String(cursor));
-
     if (top.playerAPI && typeof top.playerAPI.start === 'function') {
         top.playerAPI.start();
     }
+}
+
+function addSong(songId) {
+    const playlist = JSON.parse(top.sessionStorage.getItem('Playlist') || '[]');
+    playlist.push({"id": songId});
+    const cursor = playerAPI.getPlaylist().cursor;
+    top.sessionStorage.setItem('Playlist', JSON.stringify(playlist));
+    playerAPI.changeSong(playlist.length - 1 - cursor);
 }
 
 function renderResults(songs) {
@@ -83,12 +88,18 @@ function renderResults(songs) {
                 <button class="play-result" type="button" data-song-id="${escapeHtml(song.id)}" aria-label="Play ${title}">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L18.8 12 8 5.2Z"/></svg>
                 </button>
+                <button class="add-result" type="button" data-song-id="${escapeHtml(song.id)}" aria-label="Add ${title} to queue">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"/></svg>
+                </button>
             </article>
         `;
     }).join('');
 
     resultsEl.querySelectorAll('.play-result').forEach((button) => {
-        button.addEventListener('click', () => playSong(button.dataset.songId, songs));
+        button.addEventListener('click', () => playSong(button.dataset.songId));
+    });
+    resultsEl.querySelectorAll('.add-result').forEach((button) => {
+        button.addEventListener('click', () => addSong(button.dataset.songId));
     });
 }
 

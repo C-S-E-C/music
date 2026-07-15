@@ -293,8 +293,8 @@ h1 {
     min-height: 86px;
     padding: 12px;
     display: grid;
-    grid-template-columns: 62px minmax(0, 1fr) auto;
-    gap: 14px;
+    grid-template-columns: 62px minmax(0, 1fr) 44px 44px;
+    gap: 10px;
     align-items: center;
 }
 
@@ -332,23 +332,54 @@ h1 {
     font-size: 0.88rem;
 }
 
-.play-result {
+.play-result,
+.add-result {
     width: 44px;
     height: 44px;
     border: 0;
     border-radius: 50%;
     display: grid;
     place-items: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, opacity 0.18s ease, background-color 0.18s ease;
+}
+
+.play-result {
     color: var(--bg-color, #202020);
     background: var(--front-color, #ffffff);
-    cursor: pointer;
+}
+
+.add-result {
+    border: 1px solid color-mix(in srgb, var(--front-color, #ffffff) 24%, transparent);
+    color: var(--front-color, #ffffff);
+    background: color-mix(in srgb, var(--bg-color, #202020) 80%, var(--front-color, #ffffff) 6%);
+}
+
+.play-result:hover,
+.add-result:hover {
+    opacity: 0.84;
+    transform: scale(1.04);
+}
+
+.play-result:active,
+.add-result:active {
+    transform: scale(0.96);
+}
+
+.play-result svg,
+.add-result svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
 }
 
 .play-result svg {
-    width: 22px;
-    height: 22px;
-    fill: var(--bg-color, #202020);
     transform: translateX(1px);
+}
+
+.add-result svg {
+    width: 20px;
+    height: 20px;
 }
 
 .message-state {
