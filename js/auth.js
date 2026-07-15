@@ -84,11 +84,6 @@ async function loginUser() {
     }
 }
 
-function logout() {
-    api.clearToken();
-    window.location.href = 'index.html';
-}
-
 function copyToClipboard(elementId) {
     const element = document.getElementById(elementId);
     const text = element.value;

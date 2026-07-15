@@ -631,6 +631,17 @@ h1 {
     min-width: 86px;
     max-width: 200px;
     min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.top-nav svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    fill: currentColor;
 }
 
 .search-panel {

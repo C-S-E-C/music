@@ -69,6 +69,20 @@ function updateMe() {
         <span id="timeleft">Timeleft: ${formatTime(api.me.timeleft * 5)}</span>
         <span id="created">Joined: ${api.me.created_at ? api.me.created_at.split(' ')[0] : 'N/A'}</span>
         <span id="lastfetch">Last fetched at: ${fetchTime}</span>
+        <hr>
+        <span id="settings" class="me-menu-action" role="button" tabindex="0" onclick="window.location.href='settings.html'">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1c-.8-.6-1.6-1-2.6-1.3L14 2.6h-4l-.4 2.6c-1 .3-1.8.7-2.6 1.3l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1c.8.6 1.6 1 2.6 1.3l.4 2.6h4l.4-2.6c1-.3 1.8-.7 2.6-1.3l2.4 1 2-3.5-2-1.5zM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5z"/>
+            </svg>
+            <span>Settings</span>
+        </span>
+        <hr>
+        <span id="logout" class="me-menu-action" role="button" tabindex="0" onclick="logout()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 3.5h7.2c.6 0 1 .4 1 1v3h-2v-2H6v13h5.2v-2h2v3c0 .6-.4 1-1 1H5c-.6 0-1-.4-1-1v-15c0-.6.4-1 1-1zm11.3 4.3 4.2 4.2-4.2 4.2-1.4-1.4 1.8-1.8H9v-2h7.7l-1.8-1.8 1.4-1.4z"/>
+            </svg>
+            <span>Logout</span>
+        </span>
     `;
 }
 

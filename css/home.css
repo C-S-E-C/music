@@ -55,7 +55,7 @@ body {
 #me-wrapper:hover #me {
     opacity: 1;
     visibility: visible;
-    max-height: 175px; /* Bumped up to fit the extra account info */
+    max-height: 200px; /* Bumped up to fit the extra account info */
     max-width: 260px;  
     margin-top: 10px;  
 }
@@ -107,6 +107,28 @@ body {
 
 #me-wrapper #me span:last-child {
     margin-bottom: 0; /* Cleans up trailing margins */
+}
+
+#me-wrapper #me .me-menu-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+}
+
+#me-wrapper #me .me-menu-action svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    fill: currentColor;
+    stroke: none;
+}
+
+#me-wrapper #me .me-menu-action span {
+    margin: 0;
+    color: inherit;
+    font: inherit;
 }
 
 #main {
@@ -271,4 +293,8 @@ body {
 @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+#logout {
+    color: #ff4444 !important;
 }

@@ -4,6 +4,11 @@ if (localStorage.getItem('apiUrl') == null || localStorage.getItem('apiUrl') == 
 }
 const API_URL = localStorage.getItem('apiUrl');
 
+function logout() {
+    api.clearToken();
+    window.location.href = 'index.html';
+}
+
 class MusicAPI {
     constructor() {
         this.token = localStorage.getItem('authToken');

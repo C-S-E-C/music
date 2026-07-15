@@ -1,3 +1,9 @@
 * {
     font-family: sans-serif;
 }
+
+hr {
+    align-self: center;
+    width: 95%;
+    border: 1px solid;
+}
