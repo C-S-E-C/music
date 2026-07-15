@@ -54,7 +54,9 @@ function playSong(songId) {
     playlist.push({"id": songId});
     const cursor = playerAPI.getPlaylist().cursor;
     top.sessionStorage.setItem('Playlist', JSON.stringify(playlist));
-    playerAPI.changeSong(playlist.length - 1 - cursor);
+    if (top.playerAPI && typeof top.playerAPI.start === 'function') {
+        top.playerAPI.changeSong(playlist.length - 1 - cursor);
+    }
 }
 
 function renderResults(songs) {
