@@ -40,7 +40,7 @@ function songDuration(song) {
     return `${minutes}:${seconds}`;
 }
 
-function playSong(songId) {
+function addSong(songId) {
     const playlist = JSON.parse(top.sessionStorage.getItem('Playlist') || '[]');
     playlist.push({"id": songId});
     top.sessionStorage.setItem('Playlist', JSON.stringify(playlist));
@@ -49,7 +49,7 @@ function playSong(songId) {
     }
 }
 
-function addSong(songId) {
+function playSong(songId) {
     const playlist = JSON.parse(top.sessionStorage.getItem('Playlist') || '[]');
     playlist.push({"id": songId});
     const cursor = playerAPI.getPlaylist().cursor;
