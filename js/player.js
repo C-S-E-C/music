@@ -30,7 +30,11 @@ class player {
         this.preloadedChunks = [];
         this.nextChunkReady = false;
         this.isPreloading = false;
+        this.lastRenderedTimeText = '';
+        this.lastRenderedBarWidth = '';
+        this.boundProgressSyncLoop = this.progressSyncLoop.bind(this);
         this.workerInterval = setInterval(this.workerIntervalFunc.bind(this), 100);
+        this.progressAnimationFrame = requestAnimationFrame(this.boundProgressSyncLoop);
         this.e.controls.prev.addEventListener('click', () => {
             this.changeSong(-1);
         })
@@ -62,12 +66,43 @@ class player {
                String(seconds).padStart(4, "0");
     }
 
+    setPlayButtonState(isPlaying) {
+        this.e.controls.playbtn.style.opacity = isPlaying ? '0' : '1';
+        this.e.controls.pausebtn.style.opacity = isPlaying ? '1' : '0';
+    }
+
+    renderProgress(force = false) {
+        if (!this.song || !this.audio) {
+            return;
+        }
+
+        const elapsed = this.audio.currentTime + this.currentChunk * 5;
+        this.song.currentTime = this.formatTime(elapsed);
+
+        const timeText = `${this.song.currentTime} / ${this.song.duration}`;
+        if (force || timeText !== this.lastRenderedTimeText) {
+            this.e.progress.time.innerText = timeText;
+            this.lastRenderedTimeText = timeText;
+        }
+
+        const totalSeconds = this.song.chunks * 5;
+        const width = totalSeconds > 0 ? `${Math.min(100, (elapsed / totalSeconds) * 100).toFixed(3)}%` : '0%';
+        if (force || width !== this.lastRenderedBarWidth) {
+            this.e.progress.bar.style.width = width;
+            this.lastRenderedBarWidth = width;
+        }
+    }
+
+    progressSyncLoop() {
+        this.renderProgress();
+        this.progressAnimationFrame = requestAnimationFrame(this.boundProgressSyncLoop);
+    }
+
     play() {
         // If nothing has been started yet (or the last song ended), (re)start playback
         // instead of silently doing nothing.
         if (this.status === 'idle' || this.status === 'loading') {
-            this.e.controls.playbtn.style.opacity = '0';
-            this.e.controls.pausebtn.style.opacity = '1';
+            this.setPlayButtonState(true);
             if (this.song) {
                 this.status = 'playing';
             } else {
@@ -76,13 +111,11 @@ class player {
             return;
         }
         if (this.status == 'playing') {
-            this.e.controls.playbtn.style.opacity = '1';
-            this.e.controls.pausebtn.style.opacity = '0';
+            this.setPlayButtonState(false);
             this.status = 'paused';
         }
         else if (this.status == 'paused') {
-            this.e.controls.playbtn.style.opacity = '0';
-            this.e.controls.pausebtn.style.opacity = '1';
+            this.setPlayButtonState(true);
             this.status = 'playing';
         }
     }
@@ -96,6 +129,8 @@ class player {
         const coverUrl = await api.getSongCover(this.song.id).catch(() => 'imgs/default-cover.png');
         this.e.info.cover.style.backgroundImage = `url('${coverUrl}') || url('imgs/default-cover.png')`;
         this.e.progress.time.innerText = `00:00 / ${this.song.duration}`;
+        this.lastRenderedTimeText = `00:00 / ${this.song.duration}`;
+        this.lastRenderedBarWidth = '0%';
         this.e.progress.bar.style.transition = "width 0.1s linear";
     }
 
@@ -139,6 +174,8 @@ class player {
         this.song.id = id;
         this.song.duration = this.formatTime(this.song.chunks*5);
         this.song.currentTime = "00:00";
+        this.lastRenderedTimeText = '';
+        this.lastRenderedBarWidth = '';
         this.song.preloadChunkCount = parseInt(localStorage.getItem("settings.preloadChunkCount")) || 2;
         const renderer = this.renderSong();
 
@@ -148,8 +185,7 @@ class player {
         const firstChunk = await (await api.getSongChunk(this.song.id, this.currentChunk)).blob();
         this.audio.src = URL.createObjectURL(firstChunk);
         await renderer;
-        this.e.controls.playbtn.style.opacity = '0';
-        this.e.controls.pausebtn.style.opacity = '1';
+        this.setPlayButtonState(true);
         this.status = 'playing';
         await this.audio.play();
 
@@ -162,9 +198,7 @@ class player {
         if (!this.song||this.status == 'idle') {
             return;
         }
-        this.song.currentTime = this.formatTime(this.audio.currentTime+this.currentChunk*5);
-        this.e.progress.time.innerText = `${this.song.currentTime} / ${this.song.duration}`;
-        this.e.progress.bar.style.width = `${(this.audio.currentTime+this.currentChunk*5)/(this.song.chunks*5)*100}%`;
+        this.renderProgress();
         if (this.currentChunk >= this.song.chunks-1 && this.audio.ended) {
             this.status = 'idle';
             this.changeSong(1);

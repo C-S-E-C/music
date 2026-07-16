@@ -104,16 +104,19 @@ class MusicAPI {
     }
 
     async _updateMe() {
-        const request = this.makeRequest('/me');
-        this.me = await request;
-        request.catch((e) => {
-            if (e.status === 401){
-                logout();
+        var request={};
+        try{
+            request = await this.makeRequest('/me');
+        } catch (e) {
+            if (e.status == 401){
+                self.logout();
             }
             new Promise(resolve => setTimeout(resolve, 5000)).then(() => {
                 this._updateMe();
             })
-        })
+            return;
+        }
+        this.me = request;
         this.me.last_fetch = new Date().toISOString();
     }
 

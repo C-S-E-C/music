@@ -47,15 +47,23 @@ async function loadRecommendedSongs() {
     if (!section || !track || typeof api === 'undefined') return;
 
     const songs = [];
+    let id = 0;
+    let consecutive404 = 0;
+    const maxConsecutive404 = 5;
 
-    for (let id = 0; id < 15; id++) {
+    while (songs.length < 15 && consecutive404 < maxConsecutive404) {
         try {
             const song = await api.getSongInfo(id);
             songs.push({ ...song, id });
+            consecutive404 = 0;
         } catch (error) {
-            if (error && error.status !== 404) {
+            if (error && error.status === 404) {
+                consecutive404++;
+            } else {
                 console.warn(`Failed to load recommendation song ${id}`, error);
             }
+        } finally {
+            id++;
         }
     }
 
