@@ -10,7 +10,7 @@
 <body>
     <div id="auth-container">
         <div id="login-form" class="auth-form active">
-            <h1>Syntropica</h1>
+            <h1>Syntropica Music</h1>
             <h2>Login</h2>
             <div id="login-error" class="error-message"></div>
             <input type="text" id="login-username" placeholder="Username" />
@@ -18,10 +18,11 @@
             <input type="text" id="login-totp" placeholder="TOTP Code" maxlength="6" />
             <button onclick="loginUser()">Login</button>
             <p>Don't have an account? <a onclick="switchToRegister()">Register</a></p>
+            <p><a href="/reset-password.html">Forgot password?</a></p>
         </div>
 
         <div id="register-form" class="auth-form">
-            <h1>Syntropica</h1>
+            <h1>Syntropica Music</h1>
             <h2>Register</h2>
             <div id="register-error" class="error-message"></div>
             <input type="text" id="register-username" placeholder="Username" />

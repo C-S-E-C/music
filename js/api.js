@@ -12,8 +12,13 @@ function logout() {
 class MusicAPI {
     constructor() {
         this.token = localStorage.getItem('authToken');
-        if((this.token == null || this.token == 'null')&&window.location.pathname != '/index.html'){
+        const publicPages = ['/index.html', '/reset-password.html'];
+        const isPublicPage = publicPages.includes(window.location.pathname);
+        if((this.token == null || this.token == 'null')&&!isPublicPage){
             window.location.href = '/index.html';
+        }
+        if ((this.token == null || this.token == 'null') && isPublicPage) {
+            return;
         }
         this._updateMe();
         this.meintervar = setInterval(async () => this._updateMe(), 30000);
@@ -298,4 +303,7 @@ class MusicAPI {
 
 }
 
-const api = new MusicAPI();
+
+if (!window.player && window.top == window.self) {
+    const api = new MusicAPI();
+}

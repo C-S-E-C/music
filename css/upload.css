@@ -6,7 +6,7 @@
     min-height: 100vh;
     height: auto;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: scroll;
     background:
         radial-gradient(circle at 12% 8%, rgba(3, 166, 160, 0.18), transparent 30%),
         linear-gradient(135deg, rgba(250, 250, 250, 0.05), transparent 44%),
@@ -585,6 +585,68 @@
     opacity: 0.6;
 }
 
+.auditor-manage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.auditor-manage-card {
+    border: 1px solid color-mix(in srgb, var(--front-color) 10%, transparent);
+    border-radius: 12px;
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+    background: color-mix(in srgb, var(--bg-color) 88%, var(--front-color) 4%);
+}
+
+.auditor-manage-card h3 {
+    margin: 0;
+    color: var(--front-color);
+    font-size: 1rem;
+}
+
+.auditor-manage-card label {
+    display: grid;
+    gap: 7px;
+}
+
+.auditor-manage-card label span {
+    color: color-mix(in srgb, var(--front-color) 64%, transparent);
+    font-size: 0.86rem;
+}
+
+.auditor-manage-card input {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid color-mix(in srgb, var(--front-color) 14%, transparent);
+    border-radius: 8px;
+    outline: 0;
+    padding: 0 12px;
+    color: var(--front-color);
+    background: color-mix(in srgb, var(--bg-color) 88%, var(--front-color) 4%);
+}
+
+.auditor-manage-card input:focus {
+    border-color: var(--color-teal-50, #03a6a0);
+}
+
+.auditor-manage-card button {
+    min-height: 42px;
+    border: 0;
+    border-radius: 8px;
+    padding: 0 14px;
+    color: var(--bg-color);
+    background: var(--front-color);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.auditor-manage-card button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
 .audit-approve {
     color: var(--color-forest-100, #00521b);
     background: var(--color-forest-20, #a5e8bd);
@@ -604,7 +666,8 @@
 
     .field-grid,
     .file-grid,
-    .creator-grid {
+    .creator-grid,
+    .auditor-manage-grid {
         grid-template-columns: 1fr;
     }
 

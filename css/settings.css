@@ -163,6 +163,71 @@ body {
     background: color-mix(in srgb, var(--bg-color, #202020) 88%, transparent);
 }
 
+.settings-section .field + .field,
+.settings-section .field + .settings-inline-button {
+    margin-top: 12px;
+}
+
+.settings-or-divider {
+    margin: 14px 0;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: center;
+    color: color-mix(in srgb, var(--front-color, #ffffff) 48%, transparent);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0;
+}
+
+.settings-or-divider::before,
+.settings-or-divider::after {
+    content: "";
+    height: 1px;
+    background: color-mix(in srgb, var(--front-color, #ffffff) 12%, transparent);
+}
+
+.settings-or-divider span {
+    color: inherit;
+}
+
+.settings-inline-button {
+    min-height: 38px;
+    border: 1px solid color-mix(in srgb, var(--color-teal-50, #03a6a0) 60%, transparent);
+    border-radius: 8px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--front-color, #ffffff);
+    background: color-mix(in srgb, var(--front-color, #ffffff) 8%, transparent);
+    cursor: pointer;
+    font: inherit;
+    text-decoration: none;
+}
+
+.settings-link-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.settings-link-row div {
+    min-width: 0;
+    display: grid;
+    gap: 5px;
+}
+
+.settings-link-row strong {
+    color: var(--front-color, #ffffff);
+}
+
+.settings-link-row span {
+    color: color-mix(in srgb, var(--front-color, #ffffff) 62%, transparent);
+    font-size: 0.9rem;
+}
+
 .toggle {
     grid-template-columns: 42px minmax(0, 1fr);
     align-items: center;
@@ -198,6 +263,21 @@ body {
     font-size: 0.88rem;
 }
 
+#transfer-status {
+    min-height: 1.2em;
+    margin: 0 0 0 4px;
+    color: color-mix(in srgb, var(--front-color, #ffffff) 72%, transparent);
+    font-size: 0.88rem;
+}
+
+#transfer-status.success {
+    color: var(--color-forest-40, #5ecc88);
+}
+
+#transfer-status.error {
+    color: var(--color-red-40, #fc8783);
+}
+
 @media (max-width: 680px) {
     .settings-page {
         width: min(100% - 28px, 860px);
@@ -211,7 +291,8 @@ body {
         flex: 1 1 140px;
     }
 
-    #settings-status {
+    #settings-status,
+    #transfer-status {
         width: 100%;
         margin-left: 0;
     }

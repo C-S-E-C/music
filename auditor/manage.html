@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music - Manage Auditors</title>
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/upload.css">
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/auditor-manage.js" defer></script>
+    <style id="style"></style>
+</head>
+<body class="upload-body">
+    <div id="me-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-75 -75 1000 1000" aria-hidden="true">
+            <circle cx="427.35" cy="427.35" r="414.85"/>
+            <circle cx="427.35" cy="260.69" r="166.65"/>
+            <path d="M721.09,710.06c-1.05,23.79-22.95,39.83-55.29,63.52-94.41,69.15-200.78,69.13-238.46,68.62-131.83-1.8-216.12-59.49-234.18-72.38-36.86-26.32-59.36-42.39-60.07-65.99-1.95-64.13,158.06-143.14,307.08-138.05,136.89,4.67,283.71,80.96,280.92,144.29Z"/>
+        </svg>
+        <div id="me"></div>
+    </div>
+
+    <main class="upload-page">
+        <nav class="upload-nav" aria-label="Page navigation">
+            <a href="/home.html">Home</a>
+            <a href="/auditor/index.html">Auditor</a>
+            <a href="/auditor/approve.html">Approve</a>
+        </nav>
+
+        <section class="upload-hero">
+            <p class="upload-eyebrow">Auditor</p>
+            <h1>Manage auditors.</h1>
+            <p>Grant or revoke auditor access by user id or username.</p>
+        </section>
+
+        <section class="upload-section">
+            <div class="history-header">
+                <h2>Auditor access</h2>
+            </div>
+            <div id="auditor-manage-status" class="history-status" role="status" aria-live="polite"></div>
+
+            <div class="auditor-manage-grid">
+                <form id="grant-auditor-form" class="auditor-manage-card" data-action="grant">
+                    <h3>Grant auditor</h3>
+                    <label>
+                        <span>User ID</span>
+                        <input id="grant-user-id" name="userId" type="number" min="1" inputmode="numeric">
+                    </label>
+                    <label>
+                        <span>Username</span>
+                        <input id="grant-username" name="username" type="text" autocomplete="off">
+                    </label>
+                    <button type="submit">Grant</button>
+                </form>
+
+                <form id="revoke-auditor-form" class="auditor-manage-card" data-action="revoke">
+                    <h3>Revoke auditor</h3>
+                    <label>
+                        <span>User ID</span>
+                        <input id="revoke-user-id" name="userId" type="number" min="1" inputmode="numeric">
+                    </label>
+                    <label>
+                        <span>Username</span>
+                        <input id="revoke-username" name="username" type="text" autocomplete="off">
+                    </label>
+                    <button type="submit">Revoke</button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

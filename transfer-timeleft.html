@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syntropica Music - Transfer Timeleft</title>
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/settings.css">
+    <script src="/js/api.js" defer></script>
+    <script src="/js/transfer-timeleft.js" defer></script>
+    <style id="style"></style>
+</head>
+<body>
+    <main class="settings-page">
+        <nav class="settings-nav" aria-label="Page navigation">
+            <a href="/home.html">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5.2a.5.5 0 0 1-.5-.5v-5.2H9.2v5.2a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5v-9.7z"/>
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="/settings.html">Settings</a>
+        </nav>
+
+        <section class="settings-header">
+            <p class="eyebrow">Account</p>
+            <h1>Transfer timeleft</h1>
+        </section>
+
+        <form id="transfer-form" class="settings-form">
+            <section class="settings-group" aria-labelledby="transfer-title">
+                <div class="settings-group-heading">
+                    <h2 id="transfer-title">Transfer</h2>
+                    <p>Send timeleft to another account by user id, username, or email.</p>
+                </div>
+
+                <section class="settings-section">
+                    <label class="field">
+                        <span>Amount</span>
+                        <input id="transfer-amount" name="amount" type="number" min="1" step="1" inputmode="numeric" required>
+                    </label>
+                </section>
+
+                <section class="settings-section">
+                    <label class="field">
+                        <span>Recipient user ID</span>
+                        <input id="transfer-recipient-id" name="recipientId" type="number" min="1" inputmode="numeric">
+                    </label>
+                    <div class="settings-or-divider"><span>OR</span></div>
+                    <label class="field">
+                        <span>Recipient username</span>
+                        <input id="transfer-username" name="username" type="text" autocomplete="off">
+                    </label>
+                    <div class="settings-or-divider"><span>OR</span></div>
+                    <label class="field">
+                        <span>Recipient email</span>
+                        <input id="transfer-email" name="email" type="email" autocomplete="email">
+                    </label>
+                </section>
+            </section>
+
+            <div class="settings-actions">
+                <button id="transfer-submit" type="submit">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h12.2l-2.6-2.6L15 3l5 5-5 5-1.4-1.4L16.2 9H4V7zm16 10H7.8l2.6 2.6L9 21l-5-5 5-5 1.4 1.4L7.8 15H20v2z"/>
+                    </svg>
+                    <span>Transfer</span>
+                </button>
+                <button id="transfer-reset" type="reset">Clear</button>
+                <p id="transfer-status" role="status" aria-live="polite"></p>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

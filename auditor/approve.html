@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syntropica Music - Auditor</title>
+    <title>Syntropica Music - Approve Songs</title>
     <link rel="stylesheet" type="text/css" href="/css/home.css">
     <link rel="stylesheet" type="text/css" href="/css/base.css">
     <link rel="stylesheet" type="text/css" href="/css/upload.css">
     <script src="/js/api.js"></script>
     <script src="/js/app.js"></script>
+    <script src="/js/auditor.js" defer></script>
     <style id="style"></style>
 </head>
 <body class="upload-body">
@@ -24,27 +25,23 @@
     <main class="upload-page">
         <nav class="upload-nav" aria-label="Page navigation">
             <a href="/home.html">Home</a>
-            <a href="/auditor/approve.html">Approve</a>
+            <a href="/auditor/index.html">Auditor</a>
             <a href="/auditor/manage.html">Manage</a>
         </nav>
 
         <section class="upload-hero">
             <p class="upload-eyebrow">Auditor</p>
-            <h1>Auditor dashboard.</h1>
-            <p>Review submitted songs and manage auditor access.</p>
+            <h1>Review queue.</h1>
+            <p>Approve or reject songs that are locked to your audit session.</p>
         </section>
 
-        <section class="creator-grid" aria-label="Auditor tools">
-            <a class="creator-card" href="/auditor/approve.html">
-                <span class="creator-card-icon">✓</span>
-                <strong>Approve songs</strong>
-                <span>Preview pending songs, inspect lyrics, then approve or reject submissions.</span>
-            </a>
-            <a class="creator-card" href="/auditor/manage.html">
-                <span class="creator-card-icon">#</span>
-                <strong>Manage auditors</strong>
-                <span>Grant or revoke auditor access by user id or username.</span>
-            </a>
+        <section class="upload-section">
+            <div class="history-header">
+                <h2>Pending songs</h2>
+                <button id="refresh-audits" class="panel-action" type="button">Refresh</button>
+            </div>
+            <div id="auditor-status" class="history-status" role="status" aria-live="polite">Loading pending songs.</div>
+            <div id="auditor-list" class="auditor-list"></div>
         </section>
     </main>
 </body>
