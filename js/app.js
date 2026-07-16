@@ -21,8 +21,12 @@ function formatTime(totalSeconds) {
            String(seconds).padStart(2, "0");
 }
 
+function openMessageCenter() {
+    window.open('/message-center.html', '_blank', 'width=1000,height=700,top=50,left=100,scrollbars=yes,resizable=yes');
+}
+
 function openSettings() {
-    window.open('settings.html', '_blank', 'width=1000,height=700,top=50,left=100,scrollbars=yes,resizable=yes');
+    window.open('/settings.html', '_blank', 'width=1000,height=700,top=50,left=100,scrollbars=yes,resizable=yes');
 }
 
 async function loadStyle() {

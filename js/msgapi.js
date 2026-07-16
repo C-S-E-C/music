@@ -1,16 +1,95 @@
-(function () {
-    const MESSAGE_STYLE_ID = 'msgapi-style';
-    const MESSAGE_CONTAINER_ID = 'msgapi-container';
-    const DEFAULT_TIMEOUT = 5200;
+class MsgAPI {
+    constructor() {
+        this.allmsgs = JSON.parse(localStorage.getItem('msgapi-allmsgs')) || [];
+        this.readmsgs = JSON.parse(localStorage.getItem('msgapi-readmsgs')) || [];
+        this.styleId = 'msgapi-style';
+        this.containerId = 'msgapi-container';
+        this.defaultTimeout = 5200;
+        this.isListeningMessages = false;
+        this.icons = {
+            error: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4 22 20H2L12 2.4zm-1 6.1v6h2v-6h-2zm0 8v2h2v-2h-2z"/></svg>',
+            warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4 22 20H2L12 2.4zm-1 6.1v6h2v-6h-2zm0 8v2h2v-2h-2z"/></svg>',
+            info: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 10h2v8h-2v-8zm0-4h2v2h-2V6zm1 16a10 10 0 1 1 0-20 10 10 0 0 1 0 20z"/></svg>',
+            success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6 4.8 12l-1.4 1.4 6 6L21 7.8 19.6 6.4 9.4 16.6z"/></svg>'
+        };
+        this.msgListener = setInterval(this.msgListenerFunc.bind(this), 20000);
+        this.msgListenerFunc();
+    }
 
-    const icons = {
-        error: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4 22 20H2L12 2.4zm-1 6.1v6h2v-6h-2zm0 8v2h2v-2h-2z"/></svg>',
-        warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4 22 20H2L12 2.4zm-1 6.1v6h2v-6h-2zm0 8v2h2v-2h-2z"/></svg>',
-        info: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 10h2v8h-2v-8zm0-4h2v2h-2V6zm1 16a10 10 0 1 1 0-20 10 10 0 0 1 0 20z"/></svg>',
-        success: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6 4.8 12l-1.4 1.4 6 6L21 7.8 19.6 6.4 9.4 16.6z"/></svg>'
-    };
+    async msgListenerFunc() {
+        if (this.isListeningMessages) return;
+        if (!top.api || !top.api.me) {
+            await this.wait(500);
+            this.msgListenerFunc();
+            return;
+        }
+        if (!top.api.me.messages) return;
 
-    function messageDocument() {
+        this.isListeningMessages = true;
+
+        try {
+            var msgcount = 0;
+            for (let msg of top.api.me.messages) {
+                if (this.readmsgs.includes(msg.id)) continue;
+                msgcount++;
+                var content; var title; var type; var options = {};
+                if (msg.type == "song_approval") {
+                    options.onclick = () => {
+                        open("/creator/history.html","_blank");
+                    }
+                    const parts = msg.content.split(": ");
+                    if (parts.length != 2) continue;
+                    if (parts[0] == "APPROVED") {
+                        title = "Song Approved"
+                        type = "success";
+                        content = `Your song '${parts[1]}' has been approved!`;
+                    } else if (parts[0] == "REJECTED") {
+                        title = "Song Rejected"
+                        type = "error";
+                        content = `Your song '${parts[1]}' has been rejected.`;
+                    }
+                } else if (msg.type == "transfer_timeleft") {
+                    type = "info";
+                    title = "Got Timeleft";
+                    content = "Got "+msg.content;
+                } else if (msg.type == "transfered_timeleft") {
+                    type = "warn";
+                    title = "Gave Timeleft";
+                    content = "Gave "+msg.content;
+                } else if (msg.type == "auditor_granted") {
+                    type = "info";
+                    title = "Auditor Granted";
+                    content = msg.content;
+                }
+
+                if (!type) continue;
+                this.newMessage(type, title, content, options);
+                this.readmsgs.push(msg.id);
+                this.allmsgs.push(msg);
+                await this.wait(750);
+            }
+            if (msgcount >= 5) {
+                this.newMessage(
+                    "info", "Tip",
+                    "You can view all messaget in message center. (Settings -> Message Center)\nOr byclicking on this message.",
+                    {timeout: 15000,onclick: openMessageCenter}
+                );
+            }
+
+            localStorage.setItem('msgapi-readmsgs', JSON.stringify(this.readmsgs));
+            localStorage.setItem('msgapi-allmsgs', JSON.stringify(this.allmsgs));
+        } finally {
+            this.isListeningMessages = false;
+        }
+    }
+
+    wait(ms) {
+        return new Promise((resolve) => {
+            window.setTimeout(resolve, ms);
+        });
+    }
+
+    messageDocument() {
         try {
             if (window.top && window.top.document) {
                 return window.top.document;
@@ -21,13 +100,13 @@
         return document;
     }
 
-    function injectStyle(targetDocument) {
-        if (targetDocument.getElementById(MESSAGE_STYLE_ID)) return;
+    injectStyle(targetDocument) {
+        if (targetDocument.getElementById(this.styleId)) return;
 
         const style = targetDocument.createElement('style');
-        style.id = MESSAGE_STYLE_ID;
+        style.id = this.styleId;
         style.textContent = `
-            #${MESSAGE_CONTAINER_ID} {
+            #${this.containerId} {
                 position: fixed;
                 top: 22px;
                 right: 22px;
@@ -36,6 +115,7 @@
                 gap: 10px;
                 pointer-events: none;
                 z-index: 2147483647;
+                transition: gap 260ms ease;
             }
 
             .msgapi-message {
@@ -53,13 +133,16 @@
                 -webkit-backdrop-filter: var(--player-backdrop-filter, blur(10px));
                 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.26);
                 pointer-events: auto;
-                transform: translateX(calc(100% + 28px));
+                transform: translateY(-28px) scale(0.98);
                 opacity: 0;
-                transition: transform 260ms ease, opacity 220ms ease;
+                transition:
+                    transform 320ms cubic-bezier(0.18, 0.89, 0.32, 1.18),
+                    opacity 220ms ease;
+                will-change: transform, opacity;
             }
 
             .msgapi-message.show {
-                transform: translateX(0);
+                transform: translateY(0) scale(1);
                 opacity: 1;
             }
 
@@ -123,7 +206,7 @@
             .msgapi-message.success .msgapi-icon { color: var(--color-forest-40, #5ecc88); }
 
             @media (max-width: 520px) {
-                #${MESSAGE_CONTAINER_ID} {
+                #${this.containerId} {
                     top: 14px;
                     right: 14px;
                 }
@@ -132,13 +215,13 @@
         targetDocument.head.appendChild(style);
     }
 
-    function container(targetDocument) {
-        injectStyle(targetDocument);
+    container(targetDocument) {
+        this.injectStyle(targetDocument);
 
-        let target = targetDocument.getElementById(MESSAGE_CONTAINER_ID);
+        let target = targetDocument.getElementById(this.containerId);
         if (!target) {
             target = targetDocument.createElement('div');
-            target.id = MESSAGE_CONTAINER_ID;
+            target.id = this.containerId;
             target.setAttribute('aria-live', 'polite');
             target.setAttribute('aria-atomic', 'false');
             targetDocument.body.appendChild(target);
@@ -146,7 +229,7 @@
         return target;
     }
 
-    function escapeHtml(value) {
+    escapeHtml(value) {
         return String(value || '').replace(/[&<>"]/g, (char) => ({
             '&': '&amp;',
             '<': '&lt;',
@@ -155,7 +238,7 @@
         }[char]));
     }
 
-    function normalizeArgs(title, message, options) {
+    normalizeArgs(title, message, options) {
         if (typeof message === 'object' && message !== null) {
             options = message;
             message = '';
@@ -173,58 +256,97 @@
         };
     }
 
-    function removeMessage(messageElement) {
+    removeMessage(messageElement) {
         messageElement.classList.remove('show');
         window.setTimeout(() => {
             messageElement.remove();
         }, 260);
     }
 
-    function newMessage(type, title, message, options) {
-        const args = normalizeArgs(title, message, options);
-        const targetDocument = messageDocument();
-        const targetContainer = container(targetDocument);
+    animateMovedMessages(targetDocument, previousPositions) {
+        for (const item of previousPositions) {
+            const newTop = item.element.getBoundingClientRect().top;
+            const offset = item.top - newTop;
+
+            if (!offset) continue;
+
+            item.element.style.transition = 'none';
+            item.element.style.transform = `translateY(${offset}px)`;
+
+            targetDocument.defaultView.requestAnimationFrame(() => {
+                item.element.style.transition = 'transform 320ms cubic-bezier(0.18, 0.89, 0.32, 1)';
+                item.element.style.transform = '';
+            });
+
+            targetDocument.defaultView.setTimeout(() => {
+                item.element.style.transition = '';
+            }, 340);
+        }
+    }
+
+    newMessage(type, title, message, options) {
+        const args = this.normalizeArgs(title, message, options);
+        const targetDocument = this.messageDocument();
+        const targetContainer = this.container(targetDocument);
         const messageElement = targetDocument.createElement('div');
-        const timeout = Number(args.options.timeout ?? DEFAULT_TIMEOUT);
-        messageElement.onclick = args.options.onclick ?? (() => {});
+        const timeout = Number(args.options.timeout ?? this.defaultTimeout);
+        const previousPositions = Array.from(targetContainer.children).map((element) => ({
+            element,
+            top: element.getBoundingClientRect().top
+        }));
 
         messageElement.className = `msgapi-message ${type}`;
         messageElement.setAttribute('role', type === 'error' ? 'alert' : 'status');
         messageElement.innerHTML = `
-            <div class="msgapi-icon">${icons[type]}</div>
+            <div class="msgapi-icon">${this.icons[type]}</div>
             <div class="msgapi-content">
-                ${args.title ? `<div class="msgapi-title">${escapeHtml(args.title)}</div>` : ''}
-                <div class="msgapi-text">${escapeHtml(args.message)}</div>
+                ${args.title ? `<div class="msgapi-title">${this.escapeHtml(args.title)}</div>` : ''}
+                <div class="msgapi-text">${this.escapeHtml(args.message)}</div>
             </div>
             <button class="msgapi-close" type="button" aria-label="Close message">×</button>
         `;
 
-        messageElement.querySelector('.msgapi-close').addEventListener('click', () => {
-            removeMessage(messageElement);
+        if (typeof args.options.onclick === 'function') {
+            messageElement.addEventListener('click', args.options.onclick);
+        }
+
+        messageElement.querySelector('.msgapi-close').addEventListener('click', (event) => {
+            event.stopPropagation();
+            this.removeMessage(messageElement);
         });
 
         targetContainer.prepend(messageElement);
+        this.animateMovedMessages(targetDocument, previousPositions);
         targetDocument.defaultView.requestAnimationFrame(() => {
             messageElement.classList.add('show');
         });
 
         if (timeout > 0) {
             targetDocument.defaultView.setTimeout(() => {
-                removeMessage(messageElement);
+                this.removeMessage(messageElement);
             }, timeout);
         }
 
         return messageElement;
     }
 
-    var api = {
-        newError: (title, message, options) => newMessage('error', title, message, options),
-        newWarn: (title, message, options) => newMessage('warn', title, message, options),
-        newInfo: (title, message, options) => newMessage('info', title, message, options),
-        newSuccess: (title, message, options) => newMessage('success', title, message, options)
-    };
+    newError(title, message, options) {
+        return this.newMessage('error', title, message, options);
+    }
 
-    window.msgAPI = api;
-})();
+    newWarn(title, message, options) {
+        return this.newMessage('warn', title, message, options);
+    }
 
+    newInfo(title, message, options) {
+        return this.newMessage('info', title, message, options);
+    }
+
+    newSuccess(title, message, options) {
+        return this.newMessage('success', title, message, options);
+    }
+}
+
+window.MsgAPI = MsgAPI;
+window.msgAPI = window.msgAPI || new MsgAPI();
 var msgAPI = window.msgAPI;

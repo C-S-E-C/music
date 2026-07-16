@@ -14,13 +14,20 @@
     <meta charset="utf-8">
 </head>
 <body>
-    <div id="me-wrapper">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-75 -75 1000 1000">
-            <circle cx="427.35" cy="427.35" r="414.85"/>
-            <circle cx="427.35" cy="260.69" r="166.65"/>
-            <path d="M721.09,710.06c-1.05,23.79-22.95,39.83-55.29,63.52-94.41,69.15-200.78,69.13-238.46,68.62-131.83-1.8-216.12-59.49-234.18-72.38-36.86-26.32-59.36-42.39-60.07-65.99-1.95-64.13,158.06-143.14,307.08-138.05,136.89,4.67,283.71,80.96,280.92,144.29Z"/>
-        </svg>
-        <div id="me"></div>
+    <div id="me-actions">
+        <button id="message-center-badge" type="button" aria-label="Open message center" onclick="openMessageCenter()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h13A2.5 2.5 0 0 1 21 5.5v9A2.5 2.5 0 0 1 18.5 17H8l-5 4V5.5zm2.5-.5a.5.5 0 0 0-.5.5v11.3L7.3 15h11.2a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+            </svg>
+        </button>
+        <div id="me-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-75 -75 1000 1000">
+                <circle cx="427.35" cy="427.35" r="414.85"/>
+                <circle cx="427.35" cy="260.69" r="166.65"/>
+                <path d="M721.09,710.06c-1.05,23.79-22.95,39.83-55.29,63.52-94.41,69.15-200.78,69.13-238.46,68.62-131.83-1.8-216.12-59.49-234.18-72.38-36.86-26.32-59.36-42.39-60.07-65.99-1.95-64.13,158.06-143.14,307.08-138.05,136.89,4.67,283.71,80.96,280.92,144.29Z"/>
+            </svg>
+            <div id="me"></div>
+        </div>
     </div>
     <iframe id="main" src="pages/home.html" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-top-navigation-by-user-activation" allow="autoplay; fullscreen"></iframe>
 
