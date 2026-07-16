@@ -371,8 +371,13 @@ class player {
 
 }
 
-if (!window.player && window.top == window.self) {
+var playerAPI = window.playerAPI || null;
+
+if (!window.playerAPI && window.top == window.self) {
     document.addEventListener('DOMContentLoaded', () => {
         window.playerAPI = new player();
+        playerAPI = window.playerAPI;
     });
+} else {
+    playerAPI = window.playerAPI;
 }

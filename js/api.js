@@ -303,7 +303,19 @@ class MusicAPI {
 
 }
 
+var api = window.api || null;
 
-if (!window.player && window.top == window.self) {
-    const api = new MusicAPI();
+try {
+    if (!api && window.top && window.top !== window.self && window.top.api) {
+        api = window.top.api;
+    }
+} catch (error) {
+    api = null;
 }
+
+if (!api) {
+    api = new MusicAPI();
+}
+
+window.api = api;
+window.API_URL = API_URL;
