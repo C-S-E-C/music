@@ -90,5 +90,5 @@ function updateMe() {
 document.addEventListener('DOMContentLoaded', () => {
     loadStyle();
     updateMe();
-    setInterval(updateMe(), 30000);
+    setInterval(updateMe(), 10000);
 });
