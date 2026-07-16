@@ -12,7 +12,8 @@ function logout() {
 class MusicAPI {
     constructor() {
         this.token = localStorage.getItem('authToken');
-        const publicPages = ['/index.html', '/reset-password.html'];
+        this.PlayedSecondsAfterLastUpdate = 0;
+        const publicPages = ['/index.html', '/reset-password.html', '/settings.html'];
         const isPublicPage = publicPages.includes(window.location.pathname);
         if((this.token == null || this.token == 'null')&&!isPublicPage){
             window.location.href = '/index.html';
@@ -121,6 +122,7 @@ class MusicAPI {
             })
             return;
         }
+        this.PlayedSecondsAfterLastUpdate = 0;
         this.me = request;
         this.me.last_fetch = new Date().toISOString();
     }

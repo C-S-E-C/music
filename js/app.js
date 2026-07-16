@@ -4,20 +4,23 @@ let currentChunk = 0;
 let totalChunks = 0;
 let updateMeTimer = null;
 let updateMeInFlight = false;
-
 function formatTime(totalSeconds) {
+    var negative = "";
     if (totalSeconds <= 0) {
-        return "00:00";
+        negative = "-";
+        totalSeconds = Math.abs(totalSeconds);
     }
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = (totalSeconds % 60).toFixed(0);
     if (hours > 0) {
-        return String(hours).padStart(1, "0") + ":" + 
+        return negative +
+               String(hours).padStart(1, "0") + ":" + 
                String(minutes).padStart(2, "0") + ":" + 
                String(seconds).padStart(2, "0");
     }
-    return String(minutes).padStart(2, "0") + ":" + 
+    return negative +
+           String(minutes).padStart(2, "0") + ":" + 
            String(seconds).padStart(2, "0");
 }
 
@@ -105,9 +108,18 @@ async function updateMe() {
     updateMeInFlight = false;
 }
 
+function updateSimuTimeleft() {
+    if (top !== self) return;
+    if (!api.me) return;
+    const timeleftsec = parseInt(api.me.timeleft*5-api.PlayedSecondsAfterLastUpdate);
+    const formated = formatTime(timeleftsec);
+    document.getElementById("timeleft-span").innerText = formated;
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadStyle();
     updateMe();
     setInterval(updateMe, 10000);
+    setInterval(updateSimuTimeleft, 100);
 });

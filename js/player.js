@@ -220,6 +220,11 @@ class player {
         if (this.status == 'playing'&&this.audio.paused&&!this.audio.ended) {
             this.audio.play();
         }
+        if (this.status == 'playing') {
+            if (api.PlayedSecondsAfterLastUpdate){
+                api.PlayedSecondsAfterLastUpdate += 0.1;
+            }
+        }
         if (this.shouldSwitchToNextChunk()) {
             await this.handleChunkTransition();
         } else {
