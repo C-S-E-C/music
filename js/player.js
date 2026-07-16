@@ -13,6 +13,8 @@ class player {
         }
         this.audioA = this.e.player.querySelector('#audioA');
         this.audioB = this.e.player.querySelector('#audioB');
+        this.audioA.preload = 'auto';
+        this.audioB.preload = 'auto';
         this.e.info = {};
         this.e.info.title = this.e.player.querySelector('#title');
         this.e.info.artist = this.e.player.querySelector('#artist');
@@ -30,6 +32,8 @@ class player {
         this.preloadedChunks = [];
         this.nextChunkReady = false;
         this.isPreloading = false;
+        this.isChangingChunk = false;
+        this.nextChunkLeadMs = 0;
         this.lastRenderedTimeText = '';
         this.lastRenderedBarWidth = '';
         this.boundProgressSyncLoop = this.progressSyncLoop.bind(this);
@@ -44,6 +48,12 @@ class player {
         this.e.controls.next.addEventListener('click', () => {
             this.changeSong(1);
         })
+        this.audioA.addEventListener('ended', () => {
+            this.handleChunkTransition();
+        });
+        this.audioB.addEventListener('ended', () => {
+            this.handleChunkTransition();
+        });
     }
 
     getPlaylist() {
@@ -95,6 +105,9 @@ class player {
 
     progressSyncLoop() {
         this.renderProgress();
+        if (this.shouldSwitchToNextChunk()) {
+            this.handleChunkTransition();
+        }
         this.progressAnimationFrame = requestAnimationFrame(this.boundProgressSyncLoop);
     }
 
@@ -153,6 +166,7 @@ class player {
         this.preloadedChunks = [];
         this.nextChunkReady = false;
         this.isPreloading = false;
+        this.isChangingChunk = false;
         [this.audioA, this.audioB].forEach((el) => {
             if (el && el.src) {
                 URL.revokeObjectURL(el.src);
@@ -177,6 +191,7 @@ class player {
         this.lastRenderedTimeText = '';
         this.lastRenderedBarWidth = '';
         this.song.preloadChunkCount = parseInt(localStorage.getItem("settings.preloadChunkCount")) || 2;
+        this.nextChunkLeadMs = Math.max(0, parseInt(localStorage.getItem("settings.nextChunkLeadMs")) || 75);
         const renderer = this.renderSong();
 
         // Load the first chunk into the active audio element and start
@@ -199,21 +214,58 @@ class player {
             return;
         }
         this.renderProgress();
-        if (this.currentChunk >= this.song.chunks-1 && this.audio.ended) {
-            this.status = 'idle';
-            this.changeSong(1);
-            return;
-        }
         if (this.status == 'paused') {
             this.audio.pause();
         }
         if (this.status == 'playing'&&this.audio.paused&&!this.audio.ended) {
             this.audio.play();
         }
+        if (this.shouldSwitchToNextChunk()) {
+            await this.handleChunkTransition();
+        } else {
+            this.preload();
+            this.prepareNextChunk();
+        }
+    }
+
+    shouldSwitchToNextChunk() {
+        if (!this.song || !this.audio || this.status !== 'playing') {
+            return false;
+        }
         if (this.audio.ended) {
+            return true;
+        }
+        if (!this.nextChunkLeadMs || this.currentChunk >= this.song.chunks - 1) {
+            return false;
+        }
+        if (!this.nextChunkReady) {
+            return false;
+        }
+
+        const duration = Number.isFinite(this.audio.duration) ? this.audio.duration : 5;
+        const remainingMs = Math.max(0, (duration - this.audio.currentTime) * 1000);
+        return remainingMs <= this.nextChunkLeadMs;
+    }
+
+    async handleChunkTransition() {
+        if (!this.song || this.status === 'idle' || this.isChangingChunk) {
+            return;
+        }
+
+        this.isChangingChunk = true;
+        try {
+            if (this.currentChunk >= this.song.chunks - 1) {
+                this.status = 'idle';
+                this.changeSong(1);
+                return;
+            }
+
             const finishedAudio = this.audio;
             const nextAudio = (this.audio == this.audioA) ? this.audioB : this.audioA;
             if (!nextAudio.src) {
+                if (!this.audio.ended) {
+                    return;
+                }
                 // The next chunk wasn't ready in time; fetch it now before swapping.
                 this.nextChunkReady = false;
                 await this.prepareNextChunk(true);
@@ -221,7 +273,7 @@ class player {
             this.currentChunk++;
             this.audio = nextAudio;
             this.nextChunkReady = false;
-            this.audio.play();
+            await this.audio.play();
             // Release the chunk we just finished playing, now that the
             // active audio element has switched to the other buffer.
             finishedAudio.pause();
@@ -229,20 +281,21 @@ class player {
                 URL.revokeObjectURL(finishedAudio.src);
             }
             finishedAudio.removeAttribute('src');
+            finishedAudio.load();
             // Start buffering the chunk after next into the now-inactive buffer.
             this.preload();
             this.prepareNextChunk();
-        } else {
-            this.preload();
-            this.prepareNextChunk();
+        } finally {
+            this.isChangingChunk = false;
         }
     }
 
     async preload() {
-        if (this.isPreloading || this.status=='idle' || this.song.preloadChunkCount == this.preloadedChunks.length) {
+        const bufferedAhead = this.preloadedChunks.length + (this.nextChunkReady ? 1 : 0);
+        if (this.isPreloading || this.status=='idle' || this.song.preloadChunkCount <= bufferedAhead) {
             return;
         }
-        const nextChunkNum = this.currentChunk+this.preloadedChunks.length+1;
+        const nextChunkNum = this.currentChunk+this.preloadedChunks.length+(this.nextChunkReady ? 2 : 1);
         if (nextChunkNum >= this.song.chunks) {
             return;
         }
@@ -289,6 +342,7 @@ class player {
             URL.revokeObjectURL(targetAudio.src);
         }
         targetAudio.src = URL.createObjectURL(blob);
+        targetAudio.load();
         this.nextChunkReady = true;
     }
 

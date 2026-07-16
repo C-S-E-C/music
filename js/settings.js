@@ -1,4 +1,5 @@
 const DEFAULT_PRELOAD_CHUNKS = '2';
+const DEFAULT_NEXT_CHUNK_LEAD_MS = '75';
 const DEFAULT_BETA_LOADING = true;
 
 function settingElement(id) {
@@ -16,10 +17,12 @@ function loadStoredStyle() {
 function loadSettings() {
     const apiUrl = settingElement('api-url');
     const preloadChunks = settingElement('preload-chunks');
+    const nextChunkLeadMs = settingElement('next-chunk-lead-ms');
     const betaLoadingPage = settingElement('beta-loading-page');
 
     apiUrl.value = localStorage.getItem('apiUrl') || '';
     preloadChunks.value = localStorage.getItem('settings.preloadChunkCount') || DEFAULT_PRELOAD_CHUNKS;
+    nextChunkLeadMs.value = localStorage.getItem('settings.nextChunkLeadMs') || DEFAULT_NEXT_CHUNK_LEAD_MS;
     betaLoadingPage.checked = localStorage.getItem('settings.beta-loading-page') !== 'false';
 }
 
@@ -37,6 +40,7 @@ function saveSettings(event) {
 
     const apiUrl = settingElement('api-url').value.trim();
     const preloadChunks = settingElement('preload-chunks').value;
+    const nextChunkLeadMs = settingElement('next-chunk-lead-ms').value;
     const betaLoadingPage = settingElement('beta-loading-page').checked;
 
     if (apiUrl) {
@@ -46,6 +50,7 @@ function saveSettings(event) {
     }
 
     localStorage.setItem('settings.preloadChunkCount', String(Math.max(0, Number(preloadChunks) || 0)));
+    localStorage.setItem('settings.nextChunkLeadMs', String(Math.max(0, Number(nextChunkLeadMs) || 0)));
     localStorage.setItem('settings.beta-loading-page', String(betaLoadingPage));
     setStatus('Settings saved.');
 }
@@ -53,6 +58,7 @@ function saveSettings(event) {
 function resetSettings() {
     localStorage.removeItem('apiUrl');
     localStorage.setItem('settings.preloadChunkCount', DEFAULT_PRELOAD_CHUNKS);
+    localStorage.setItem('settings.nextChunkLeadMs', DEFAULT_NEXT_CHUNK_LEAD_MS);
     localStorage.setItem('settings.beta-loading-page', String(DEFAULT_BETA_LOADING));
     loadSettings();
     setStatus('Settings reset.');
