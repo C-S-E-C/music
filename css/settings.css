@@ -102,34 +102,45 @@ body {
 
 .settings-form {
     display: grid;
-    gap: 16px;
+    gap: 24px;
+}
+
+.settings-group {
+    display: grid;
+    gap: 12px;
+}
+
+.settings-group[hidden] {
+    display: none;
+}
+
+.settings-group-heading {
+    padding: 0 2px;
+}
+
+.settings-group-heading h2 {
+    margin: 0 0 6px;
+    color: var(--front-color, #ffffff);
+    font-size: 1.16rem;
+}
+
+.settings-group-heading p {
+    margin: 0;
+    color: color-mix(in srgb, var(--front-color, #ffffff) 62%, transparent);
+    font-size: 0.92rem;
+    line-height: 1.4;
 }
 
 .settings-section {
     border: 1px solid color-mix(in srgb, var(--front-color, #ffffff) 12%, transparent);
     border-radius: 8px;
     padding: 18px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
-    gap: 18px;
-    align-items: center;
+    display: block;
     background: color-mix(in srgb, var(--front-color, #ffffff) 5%, transparent);
 }
 
 .settings-section[hidden] {
     display: none;
-}
-
-.settings-section h2 {
-    margin: 0 0 6px;
-    font-size: 1.08rem;
-}
-
-.settings-section p {
-    margin: 0;
-    color: color-mix(in srgb, var(--front-color, #ffffff) 62%, transparent);
-    font-size: 0.92rem;
-    line-height: 1.4;
 }
 
 .field,
@@ -190,10 +201,6 @@ body {
 @media (max-width: 680px) {
     .settings-page {
         width: min(100% - 28px, 860px);
-    }
-
-    .settings-section {
-        grid-template-columns: 1fr;
     }
 
     .settings-actions {

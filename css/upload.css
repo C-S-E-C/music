@@ -206,6 +206,40 @@
     border-color: color-mix(in srgb, var(--color-red-60, #e84846) 62%, transparent);
 }
 
+.upload-progress {
+    min-height: 38px;
+    display: none;
+    grid-template-columns: minmax(0, 1fr) 48px;
+    gap: 12px;
+    align-items: center;
+}
+
+.upload-progress.show {
+    display: grid;
+}
+
+.upload-progress-track {
+    height: 10px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--front-color) 12%, transparent);
+}
+
+#upload-progress-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-teal-50, #03a6a0);
+    transition: width 180ms ease;
+}
+
+#upload-progress-label {
+    color: color-mix(in srgb, var(--front-color) 70%, transparent);
+    font-size: 0.86rem;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
 .upload-actions {
     display: flex;
     gap: 12px;
@@ -443,6 +477,94 @@
     min-width: 0;
 }
 
+.audit-preview {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+}
+
+.audit-player {
+    display: grid;
+    grid-template-columns: auto auto minmax(120px, 1fr);
+    gap: 10px;
+    align-items: center;
+}
+
+.audit-play,
+.audit-lyrics-toggle {
+    min-height: 34px;
+    border: 1px solid color-mix(in srgb, var(--front-color) 14%, transparent);
+    border-radius: 8px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: var(--front-color);
+    background: color-mix(in srgb, var(--bg-color) 78%, var(--front-color) 8%);
+    cursor: pointer;
+}
+
+.audit-play.playing {
+    border-color: color-mix(in srgb, var(--color-teal-50, #03a6a0) 60%, transparent);
+}
+
+.audit-play svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+}
+
+.audit-time {
+    color: color-mix(in srgb, var(--front-color) 66%, transparent);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.audit-progress {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--front-color) 12%, transparent);
+}
+
+.audit-progress-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-teal-50, #03a6a0);
+    transition: width 120ms linear;
+}
+
+.audit-lyrics-wrap {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+}
+
+.audit-lyrics {
+    width: 100%;
+    max-height: 180px;
+    overflow: auto;
+    border: 1px solid color-mix(in srgb, var(--front-color) 10%, transparent);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--bg-color) 90%, var(--front-color) 4%);
+}
+
+.audit-lyrics[hidden] {
+    display: none;
+}
+
+.audit-lyrics p {
+    margin: 0;
+    padding: 5px 0;
+    color: color-mix(in srgb, var(--front-color) 76%, transparent);
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
 .auditor-actions {
     display: flex;
     gap: 10px;
@@ -526,6 +648,20 @@
 
     .auditor-actions {
         grid-column: 1 / -1;
+    }
+
+    .audit-preview {
+        grid-column: 1 / -1;
+    }
+
+    .audit-player {
+        grid-template-columns: 1fr;
+        justify-items: stretch;
+    }
+
+    .audit-play,
+    .audit-lyrics-toggle {
+        width: 100%;
     }
 
     .auditor-actions button {

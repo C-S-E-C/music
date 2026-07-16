@@ -13,7 +13,7 @@
 <body>
     <main class="settings-page">
         <nav class="settings-nav" aria-label="Page navigation">
-            <a href="home.html">
+            <a href="/home.html">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5.2a.5.5 0 0 1-.5-.5v-5.2H9.2v5.2a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5v-9.7z"/>
                 </svg>
@@ -54,41 +54,42 @@
         </div>
 
         <form id="settings-form" class="settings-form">
-            <section class="settings-section" data-category="connection" aria-labelledby="connection-title">
-                <div>
+            <section class="settings-group" data-category="connection" aria-labelledby="connection-title">
+                <div class="settings-group-heading">
                     <h2 id="connection-title">Connection</h2>
                     <p>Set the backend endpoint this browser should use.</p>
                 </div>
-                <label class="field">
-                    <span>API URL</span>
-                    <input id="api-url" name="apiUrl" type="url" placeholder="https://api.example.com" autocomplete="url">
-                </label>
+                <section class="settings-section">
+                    <label class="field">
+                        <span>API URL</span>
+                        <input id="api-url" name="apiUrl" type="url" placeholder="https://api.example.com" autocomplete="url">
+                    </label>
+                </section>
             </section>
 
-            <section class="settings-section" data-category="experience" aria-labelledby="experience-title">
-                <div>
-                    <h2 id="playback-title">Experience</h2>
-                    <p>Tune buffering behavior for streaming songs.</p>
-                </div>
-                <label class="field">
-                    <span>Preload chunks</span>
-                    <input id="preload-chunks" name="preloadChunkCount" type="number" min="0" max="8" step="1">
-                </label>
-                <label class="field">
-                    <span>Next chunk lead time (ms)</span>
-                    <input id="next-chunk-lead-ms" name="nextChunkLeadMs" type="number" min="0" max="1000" step="25">
-                </label>
-            </section>
-
-            <section class="settings-section" data-category="experience" aria-labelledby="experience-title" betaNeeded>
-                <div>
+            <section class="settings-group" data-category="experience" aria-labelledby="experience-title">
+                <div class="settings-group-heading">
                     <h2 id="experience-title">Experience</h2>
-                    <p>Control optional beta interface behavior.</p>
+                    <p>Tune playback and optional beta interface behavior.</p>
                 </div>
-                <label class="toggle">
-                    <input id="beta-loading-page" name="betaLoadingPage" type="checkbox">
-                    <span>Show beta loading animation</span>
-                </label>
+                <section class="settings-section">
+                    <label class="field">
+                        <span>Preload chunks</span>
+                        <input id="preload-chunks" name="preloadChunkCount" type="number" min="0" max="8" step="1">
+                    </label>
+                </section>
+                <section class="settings-section">
+                    <label class="field">
+                        <span>Next chunk lead time (ms)</span>
+                        <input id="next-chunk-lead-ms" name="nextChunkLeadMs" type="number" min="0" max="1000" step="25">
+                    </label>
+                </section>
+                <section class="settings-section" betaNeeded>
+                    <label class="toggle">
+                        <input id="beta-loading-page" name="betaLoadingPage" type="checkbox">
+                        <span>Show beta loading animation</span>
+                    </label>
+                </section>
             </section>
 
             <div class="settings-actions">

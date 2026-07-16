@@ -2,6 +2,8 @@
 let currentSongId = null;
 let currentChunk = 0;
 let totalChunks = 0;
+let updateMeTimer = null;
+let updateMeInFlight = false;
 
 function formatTime(totalSeconds) {
     if (totalSeconds <= 0) {
@@ -19,6 +21,10 @@ function formatTime(totalSeconds) {
            String(seconds).padStart(2, "0");
 }
 
+function openSettings() {
+    window.open('settings.html', '_blank', 'width=1000,height=700,top=50,left=100,scrollbars=yes,resizable=yes');
+}
+
 async function loadStyle() {
     if (localStorage.getItem('style')){
         document.getElementById('style').innerHTML = localStorage.getItem('style');
@@ -30,16 +36,24 @@ async function loadStyle() {
     }
 }
 
-function updateMe() {
+async function updateMe() {
     if (top !== self) return;
-    
-    if (!api || !api.me) {
-        updateMeTimer = setTimeout(updateMe, 1000); 
+
+    if (typeof api === 'undefined') {
+        window.clearTimeout(updateMeTimer);
+        updateMeTimer = window.setTimeout(updateMe, 1000);
         return;
     }
-    
+    if (!api.me) {
+        window.clearTimeout(updateMeTimer);
+        updateMeTimer = window.setTimeout(updateMe, 1000);
+        return;
+    }
     const info = document.querySelector('#me-wrapper #me');
     if (!info) return;
+
+    if (updateMeInFlight) return;
+    updateMeInFlight = true;
 
     // Format last fetch time
     let fetchTime = 'Unknown';
@@ -70,7 +84,7 @@ function updateMe() {
         <span id="created">Joined: ${api.me.created_at ? api.me.created_at.split(' ')[0] : 'N/A'}</span>
         <span id="lastfetch">Last fetched at: ${fetchTime}</span>
         <hr>
-        <span id="settings" class="me-menu-action" role="button" tabindex="0" onclick="window.location.href='settings.html'">
+        <span id="settings" class="me-menu-action" role="button" tabindex="0" onclick="openSettings()">
             <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1c-.8-.6-1.6-1-2.6-1.3L14 2.6h-4l-.4 2.6c-1 .3-1.8.7-2.6 1.3l-2.4-1-2 3.5 2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1c.8.6 1.6 1 2.6 1.3l.4 2.6h4l.4-2.6c1-.3 1.8-.7 2.6-1.3l2.4 1 2-3.5-2-1.5zM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5z"/>
             </svg>
@@ -84,11 +98,12 @@ function updateMe() {
             <span>Logout</span>
         </span>
     `;
+    updateMeInFlight = false;
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadStyle();
     updateMe();
-    setInterval(updateMe(), 10000);
+    setInterval(updateMe, 10000);
 });

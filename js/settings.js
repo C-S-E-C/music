@@ -71,8 +71,8 @@ function selectCategory(category) {
         button.setAttribute('aria-selected', String(isActive));
     });
 
-    document.querySelectorAll('.settings-section').forEach((section) => {
-        section.hidden = category !== 'all' && section.dataset.category !== category;
+    document.querySelectorAll('.settings-group').forEach((group) => {
+        group.hidden = category !== 'all' && group.dataset.category !== category;
     });
 }
 

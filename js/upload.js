@@ -16,6 +16,23 @@ function clearUploadStatus() {
     status.className = 'upload-status';
 }
 
+function setUploadProgress(percent, visible = true) {
+    const progress = uploadField('upload-progress');
+    const bar = uploadField('upload-progress-bar');
+    const label = uploadField('upload-progress-label');
+    if (!progress || !bar || !label) return;
+
+    const safePercent = Math.max(0, Math.min(100, Math.round(percent)));
+    progress.classList.toggle('show', visible);
+    progress.setAttribute('aria-hidden', String(!visible));
+    bar.style.width = `${safePercent}%`;
+    label.textContent = `${safePercent}%`;
+}
+
+function clearUploadProgress() {
+    setUploadProgress(0, false);
+}
+
 function fileNameOrDefault(input, fallback) {
     return input.files && input.files[0] ? input.files[0].name : fallback;
 }
@@ -89,9 +106,54 @@ function buildUploadFormData() {
     return formData;
 }
 
+function sendUpload(formData) {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('POST', `${API_URL}/upload-song`);
+        xhr.setRequestHeader('Authorization', `Bearer ${api.getToken()}`);
+
+        xhr.upload.addEventListener('progress', (event) => {
+            if (!event.lengthComputable) {
+                setUploadStatus('Uploading and preparing your song for review.');
+                setUploadProgress(0);
+                return;
+            }
+
+            setUploadProgress((event.loaded / event.total) * 100);
+        });
+
+        xhr.addEventListener('load', () => {
+            let data = {};
+            try {
+                data = JSON.parse(xhr.responseText || '{}');
+            } catch (error) {
+                data = {};
+            }
+            if (xhr.status < 200 || xhr.status >= 300) {
+                reject(new Error(data.error || `HTTP ${xhr.status}`));
+                return;
+            }
+
+            resolve(data);
+        });
+
+        xhr.addEventListener('error', () => {
+            reject(new Error('Upload failed.'));
+        });
+
+        xhr.addEventListener('abort', () => {
+            reject(new Error('Upload cancelled.'));
+        });
+
+        xhr.send(formData);
+    });
+}
+
 async function uploadSong(event) {
     event.preventDefault();
     clearUploadStatus();
+    clearUploadProgress();
 
     if (!api.getToken()) {
         setUploadStatus('You need to log in before uploading.', 'error');
@@ -108,22 +170,12 @@ async function uploadSong(event) {
 
     setUploading(true);
     setUploadStatus('Uploading and preparing your song for review.');
+    setUploadProgress(0);
 
     try {
-        const response = await fetch(`${API_URL}/upload-song`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${api.getToken()}`
-            },
-            body: formData
-        });
-
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) {
-            throw new Error(data.error || `HTTP ${response.status}`);
-        }
-
-        setUploadStatus(`Uploaded "${data.title || 'song'}". It is now pending review.`, 'success');
+        const data = await sendUpload(formData);
+        setUploadProgress(100);
+        setUploadStatus(`Upload complete. "${data.title || 'song'}" is now pending review.`, 'success');
         uploadField('upload-form').reset();
         uploadField('audio-label').textContent = 'Audio file';
         uploadField('lyrics-label').textContent = 'Lyrics';
@@ -141,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadField('upload-form').addEventListener('submit', uploadSong);
     uploadField('upload-form').addEventListener('reset', () => {
         clearUploadStatus();
+        clearUploadProgress();
         setTimeout(() => {
             uploadField('audio-label').textContent = 'Audio file';
             uploadField('lyrics-label').textContent = 'Lyrics';
