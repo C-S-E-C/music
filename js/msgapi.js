@@ -220,8 +220,6 @@
     var api = {
         newError: (title, message, options) => newMessage('error', title, message, options),
         newWarn: (title, message, options) => newMessage('warn', title, message, options),
-        NewInfo: (title, message, options) => newMessage('info', title, message, options),
-        Newsuccess: (title, message, options) => newMessage('success', title, message, options),
         newInfo: (title, message, options) => newMessage('info', title, message, options),
         newSuccess: (title, message, options) => newMessage('success', title, message, options)
     };

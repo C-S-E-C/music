@@ -169,13 +169,16 @@ async function uploadSong(event) {
     }
 
     setUploading(true);
-    setUploadStatus('Uploading and preparing your song for review.');
+    setUploadStatus('Uploading and preparing your song for review. DO NOT CLOSE THIS PAGE.');
     setUploadProgress(0);
 
     try {
         const data = await sendUpload(formData);
         setUploadProgress(100);
         setUploadStatus(`Upload complete. "${data.title || 'song'}" is now pending review.`, 'success');
+        if (typeof msgAPI !== 'undefined') {
+            msgAPI.newSuccess("Upload complete", `Your song "${data.title || 'song'}" is now pending review.\nYou may now close this page.`);
+        }
         uploadField('upload-form').reset();
         uploadField('audio-label').textContent = 'Audio file';
         uploadField('lyrics-label').textContent = 'Lyrics';
