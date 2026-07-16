@@ -36,6 +36,7 @@ class player {
         this.nextChunkLeadMs = 0;
         this.lastRenderedTimeText = '';
         this.lastRenderedBarWidth = '';
+        this.lastPlayedPositionSeconds = null;
         this.boundProgressSyncLoop = this.progressSyncLoop.bind(this);
         this.workerInterval = setInterval(this.workerIntervalFunc.bind(this), 100);
         this.progressAnimationFrame = requestAnimationFrame(this.boundProgressSyncLoop);
@@ -103,8 +104,48 @@ class player {
         }
     }
 
+    playedPositionSeconds() {
+        if (!this.song || !this.audio) {
+            return null;
+        }
+        return this.currentChunk * 5 + this.audio.currentTime;
+    }
+
+    resetPlayedSecondsTracking() {
+        this.lastPlayedPositionSeconds = null;
+    }
+
+    updatePlayedSecondsAfterLastUpdate() {
+        if (typeof api === 'undefined' || typeof api.PlayedSecondsAfterLastUpdate !== 'number') {
+            return;
+        }
+        if (this.status !== 'playing' || !this.audio || this.audio.paused || this.audio.ended) {
+            this.resetPlayedSecondsTracking();
+            return;
+        }
+
+        const position = this.playedPositionSeconds();
+        if (position === null) {
+            this.resetPlayedSecondsTracking();
+            return;
+        }
+
+        if (this.lastPlayedPositionSeconds === null) {
+            this.lastPlayedPositionSeconds = position;
+            return;
+        }
+
+        const delta = position - this.lastPlayedPositionSeconds;
+        this.lastPlayedPositionSeconds = position;
+
+        if (delta > 0) {
+            api.PlayedSecondsAfterLastUpdate += delta;
+        }
+    }
+
     progressSyncLoop() {
         this.renderProgress();
+        this.updatePlayedSecondsAfterLastUpdate();
         if (this.shouldSwitchToNextChunk()) {
             this.handleChunkTransition();
         }
@@ -126,10 +167,12 @@ class player {
         if (this.status == 'playing') {
             this.setPlayButtonState(false);
             this.status = 'paused';
+            this.resetPlayedSecondsTracking();
         }
         else if (this.status == 'paused') {
             this.setPlayButtonState(true);
             this.status = 'playing';
+            this.resetPlayedSecondsTracking();
         }
     }
 
@@ -190,6 +233,7 @@ class player {
         this.song.currentTime = "00:00";
         this.lastRenderedTimeText = '';
         this.lastRenderedBarWidth = '';
+        this.resetPlayedSecondsTracking();
         this.song.preloadChunkCount = parseInt(localStorage.getItem("settings.preloadChunkCount")) || 2;
         this.nextChunkLeadMs = Math.max(0, parseInt(localStorage.getItem("settings.nextChunkLeadMs")) || 75);
         const renderer = this.renderSong();
@@ -216,15 +260,12 @@ class player {
         this.renderProgress();
         if (this.status == 'paused') {
             this.audio.pause();
+            this.resetPlayedSecondsTracking();
         }
         if (this.status == 'playing'&&this.audio.paused&&!this.audio.ended) {
             this.audio.play();
         }
-        if (this.status == 'playing') {
-            if (api.PlayedSecondsAfterLastUpdate){
-                api.PlayedSecondsAfterLastUpdate += 0.1;
-            }
-        }
+        this.updatePlayedSecondsAfterLastUpdate();
         if (this.shouldSwitchToNextChunk()) {
             await this.handleChunkTransition();
         } else {
@@ -279,6 +320,7 @@ class player {
             this.audio = nextAudio;
             this.nextChunkReady = false;
             await this.audio.play();
+            this.resetPlayedSecondsTracking();
             // Release the chunk we just finished playing, now that the
             // active audio element has switched to the other buffer.
             finishedAudio.pause();
@@ -363,6 +405,7 @@ class player {
             cursor += playlist.songs.length;
         }
         this.status = 'idle';
+        this.resetPlayedSecondsTracking();
         sessionStorage.setItem('PlaylistCursor', String(cursor));
         this.start();
     }
